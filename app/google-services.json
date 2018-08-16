@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "602107425684",
+    "firebase_url": "https://sights-and-sounds-3248f.firebaseio.com",
+    "project_id": "sights-and-sounds-3248f",
+    "storage_bucket": "sights-and-sounds-3248f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:602107425684:android:98170e10f99361b8",
+        "android_client_info": {
+          "package_name": "com.craiovadata.sightsandsounds"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "602107425684-2eg3okc53mq1a3u7e4ufdn0qichqtppi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUd-k6HbYQ9NT1xy_t4tQuD0UyOIpE2og"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
