@@ -1,47 +1,45 @@
 package com.craiovadata.sightsandsounds.model;
 
+
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-/**
- * Restaurant POJO.
- */
 @IgnoreExtraProperties
 public class Entry {
 
-    public static final String FIELD_CITY = "country";
-    public static final String FIELD_CATEGORY = "img_title";
-    public static final String FIELD_PRICE = "img_description";
-    public static final String FIELD_POPULARITY = "numRatings";
-    public static final String FIELD_AVG_RATING = "avgRating";
-
-    private String id;
     private String country;
     private String img_title;
-    private String photo;
     private String img_description;
-    private int numRatings;
-    private double avgRating;
+    private String music_title;
+    private String music_description;
+    private double lat;
+    private double lon;
 
-    public Entry() {}
-
-    public Entry(JSONObject object) throws JSONException {
-        this.id = object.getString("id");
-        this.country = object.getString("country");
-        this.img_title = object.getJSONObject("img").getString("title");
-        this.img_description = object.getJSONObject("img").getString("descr");
-        this.numRatings = numRatings;
-        this.avgRating = avgRating;
+    public Entry(String country, String img_title, String img_description, String music_title, String music_description, double lat, double lon) {
+        this.country = country;
+        this.img_title = img_title;
+        this.img_description = img_description;
+        this.music_title = music_title;
+        this.music_description = music_description;
+        this.lat = lat;
+        this.lon = lon;
     }
 
-    public String getId() {
-        return id;
+    public Entry()  { }
+
+    public double getLat() {
+        return lat;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
+    public void setLon(double lon) {
+        this.lon = lon;
     }
 
     public String getCountry() {
@@ -60,15 +58,7 @@ public class Entry {
         this.img_title = img_title;
     }
 
-    public String getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(String photo) {
-        this.photo = photo;
-    }
-
-    public String  getImg_description() {
+    public String getImg_description() {
         return img_description;
     }
 
@@ -76,19 +66,19 @@ public class Entry {
         this.img_description = img_description;
     }
 
-    public int getNumRatings() {
-        return numRatings;
+    public String getMusic_title() {
+        return music_title;
     }
 
-    public void setNumRatings(int numRatings) {
-        this.numRatings = numRatings;
+    public void setMusic_title(String music_title) {
+        this.music_title = music_title;
     }
 
-    public double getAvgRating() {
-        return avgRating;
+    public String getMusic_description() {
+        return music_description;
     }
 
-    public void setAvgRating(double avgRating) {
-        this.avgRating = avgRating;
+    public void setMusic_description(String music_description) {
+        this.music_description = music_description;
     }
 }

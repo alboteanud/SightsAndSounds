@@ -287,7 +287,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-
     private void showSignInErrorDialog(@StringRes int message) {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.title_sign_in_error)
@@ -309,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements
         dialog.show();
     }
 
-    private String loadJSONFromAsset(){
+    private String loadJSONFromAsset() {
         String json = null;
         InputStream file = null;
         try {
@@ -359,21 +358,27 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
-    private void onAddSightsAndSoundsClicked()  {
+    private void onAddSightsAndSoundsClicked() {
         WriteBatch batch = mFirestore.batch();
         try {
             String jsonString = loadJSONFromAsset();
             JSONArray jsonArray = new JSONArray(jsonString);
 
-
             for (int i = 0; i < jsonArray.length(); i++) {
-                DocumentReference restRef = mFirestore.collection("sights_and_sounds_").document();
 
-                JSONObject object = jsonArray.getJSONObject(i);
+                JSONObject json = jsonArray.getJSONObject(i);
+                Entry entry = new Entry(
+                        json.getString("country"),
+                        json.getString("img_title"),
+                        json.getString("img_description"),
+                        json.getString("music_title"),
+                        json.getString("music_description"),
+                        json.getDouble("lat"),
+                        json.getDouble("lon"));
 
-                Entry entry = new Entry(object);
-                batch.set(restRef, entry);
-
+                String refId = String.valueOf(i);
+                DocumentReference entryRef = mFirestore.collection("sights_and_sounds_").document(refId);
+                batch.set(entryRef, entry);
 
             }
         } catch (JSONException e) {
