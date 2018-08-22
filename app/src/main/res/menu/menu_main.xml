@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menu_sign_out"
@@ -8,6 +8,11 @@
 
     <item
         android:id="@+id/menu_add_items"
-        android:title="@string/add_random_items" />
+        android:title="@string/add_random_items"
+        android:visible="false" />
+
+    <item
+        android:id="@+id/menu_add_sights_and_sounds"
+        android:title="Add Sights and Sounds" />
 
 </menu>

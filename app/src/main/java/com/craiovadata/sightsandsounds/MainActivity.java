@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.craiovadata.sightsandsounds.adapter.RestaurantAdapter;
+import com.craiovadata.sightsandsounds.model.Entry;
 import com.craiovadata.sightsandsounds.model.Rating;
 import com.craiovadata.sightsandsounds.model.Restaurant;
 import com.craiovadata.sightsandsounds.util.RatingUtil;
@@ -39,6 +40,12 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.WriteBatch;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 
@@ -168,6 +175,9 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.menu_add_items:
                 onAddItemsClicked();
                 break;
+            case R.id.menu_add_sights_and_sounds:
+                onAddSightsAndSoundsClicked();
+                break;
             case R.id.menu_sign_out:
                 AuthUI.getInstance().signOut(this);
                 startSignIn();
@@ -223,7 +233,8 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onFilter(Filters filters) {
         // Construct query basic query
-        Query query = mFirestore.collection("restaurants");
+//        Query query = mFirestore.collection("restaurants");
+        Query query = mFirestore.collection("sights_and_sounds");
 
         // Category (equality filter)
         if (filters.hasCategory()) {
@@ -275,11 +286,52 @@ public class MainActivity extends AppCompatActivity implements
         mViewModel.setIsSigningIn(true);
     }
 
+
+
+    private void showSignInErrorDialog(@StringRes int message) {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.title_sign_in_error)
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton(R.string.option_retry, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        startSignIn();
+                    }
+                })
+                .setNegativeButton(R.string.option_exit, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                }).create();
+
+        dialog.show();
+    }
+
+    private String loadJSONFromAsset(){
+        String json = null;
+        InputStream file = null;
+        try {
+            file = getAssets().open("data.json");
+            byte[] buffer = new byte[file.available()];
+            file.read(buffer);
+            file.close();
+            json = new String(buffer, "UTF-8");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return json;
+
+    }
+
     private void onAddItemsClicked() {
         // Add a bunch of random restaurants
         WriteBatch batch = mFirestore.batch();
         for (int i = 0; i < 10; i++) {
-            DocumentReference restRef = mFirestore.collection("restaurants").document();
+            DocumentReference restRef = mFirestore.collection("sights_and_sounds").document();
 
             // Create random restaurant / ratings
             Restaurant randomRestaurant = RestaurantUtil.getRandom(this);
@@ -307,24 +359,38 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
-    private void showSignInErrorDialog(@StringRes int message) {
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.title_sign_in_error)
-                .setMessage(message)
-                .setCancelable(false)
-                .setPositiveButton(R.string.option_retry, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                      startSignIn();
-                    }
-                })
-                .setNegativeButton(R.string.option_exit, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        finish();
-                    }
-                }).create();
+    private void onAddSightsAndSoundsClicked()  {
+        WriteBatch batch = mFirestore.batch();
+        try {
+            String jsonString = loadJSONFromAsset();
+            JSONArray jsonArray = new JSONArray(jsonString);
 
-        dialog.show();
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                DocumentReference restRef = mFirestore.collection("sights_and_sounds_").document();
+
+                JSONObject object = jsonArray.getJSONObject(i);
+
+                Entry entry = new Entry(object);
+                batch.set(restRef, entry);
+
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Log.d(TAG, "Write batch succeeded.");
+                } else {
+                    Log.w(TAG, "write batch failed.", task.getException());
+                }
+            }
+        });
+
     }
+
+
 }

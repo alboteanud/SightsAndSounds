@@ -1,0 +1,82 @@
+[
+ {
+   "id": 1,
+   "country": "Romania",
+   "img": {
+      "title": "Abiding Traditions in Transylvania",
+      "descr": "Adhering to the time-honoured ways of their ancestors, Transylvanian farm workers load sheaves of grain into horse-drawn carts. The beautiful land of the Transylvania plateau is particularly suited to the cultivation of maize, wheat, and other cereals. The region is also known for its preservation of Romanian folk culture, including wooden houses with intricately carved exteriors and the traditional embroidered garments still worn by many villagers."
+   },
+   "geo": [
+      45.9,
+      23
+   ],
+   "music": {
+      "title": "Trecuto doru codru ",
+      "descr": "Formerly part of the Hungarian Empire, Transylvania shifted to Romanian rule after World War I. As a result, many ethnic Hungarians were forced to assimilate Romanian culture. In remote parts of the region, however, many people still wear traditional Transylvanian dress and practise their own ceremonial rituals and customs. Music likewise retains stylistic features of Hungarian music. The example is a dance song performed by a solo vocalist. The melody is limited to a few notes while the rhythm is in a quick duple metre—both elements common to Hungarian folk songs."
+   }
+},
+ {
+   "id": 2,
+   "country": "Bulgaria",
+   "img": {
+      "title": " Kazanluk’s June Festival",
+      "descr": "Traditional folk costumes and baskets brimming with roses highlight the annual June festival in Kazanluk. Located in the Valley of the Roses, a fertile plain located between two mountain ranges in central Bulgaria, Kazanluk is one of many towns in which folk culture remains an integral part of everyday life. Rose cultivation is an established industry in this region."
+   },
+   "geo": [
+      42.6,
+      25.4
+   ],
+   "music": {
+      "title": "Wedding Music",
+      "descr": "Among the Romany (gypsies) in Bulgaria, who mostly dominate the professional music scene, a primarily instrumental folk-music style has become widely popular since the 1970s. Despite being given little or no government recognition (unlike the Bulgarian Female Choir), Romany wedding band music, or stambolovo, is a favourite of the people. It is played at weddings, funerals, birth rites, and street festivals. Wedding band music is rooted in the highly ornamented melodies played on the Turkish zurna, a double-reed wind instrument common in the Thracian region. In this example, played by Ivo Papasov and his Bulgarian Wedding Band, currently the most popular of these bands, the zurna has been replaced by a clarinet, and the improvisatory element of the sound has clearly been affected by American jazz. The asymmetric or uneven metres common to this music are derived from traditional dance rhythms found throughout Bulgaria. Kopanitsa performed by Ivo Papasov and his Bulgarian Wedding Band"
+   }
+},
+ {
+   "id": 3,
+   "country": "Bulgaria",
+   "img": {
+      "title": "Fertile Soil on the Danubian Plain",
+      "descr": "The Danubian Plain stretches across northern Bulgaria from the Danube south to the Balkan Mountains, covering nearly one-third of the country in rich, productive soil. A combination of the most fertile land in Bulgaria and humid summer weather make the region ideal for agriculture. Cereals such as wheat, maize, and barley grow well on the rolling hills of the plain, while flatter areas are ideal for fruit and vegetables. Expanses of scrub grass in the northeast section provide excellent pasture for sheep."
+   },
+   "geo": [
+      43.8,
+      26.7
+   ],
+   "music": {
+      "title": "Traditional Song",
+      "descr": "The folk music of Bulgaria shares similarities with neighbouring Slavic cultures. Its distinctive characteristics include a variety of lively asymmetrical rhythms and the frequent use, both methodically and in harmony, of small intervals (such as minor seconds and thirds). The melodic range of the songs is small, usually within a fifth or an octave. This typical example, from the Grad Sofiya region in west-central Bulgaria, features a group of women, one of whom takes the lead melody while the others sing a second part.Ozdole Ide Devoiche (A Young Girl is Coming) performed by The Trio Bulgarka, from The Trio Bulgarka: The Forest is Crying "
+   }
+},
+ {
+   "id": 4,
+   "country": "Bolivia",
+   "img": {
+      "title": "Festival in the Sky",
+      "descr": "The Quechua-speaking peoples of the Andes Mountains are scattered throughout hundreds of villages in Ecuador, Peru, and Bolivia. In addition, many reside in the city of Cuzco, once the capital of the Inca Empire. This “city in the sky” is the frequent setting for the colourful celebrations of its indigenous peoples."
+   },
+   "geo": [
+      -16.5,
+      -68
+   ],
+   "music": {
+      "title": "Pan-pipe Music",
+      "descr": "Largely inhabited by Quechua- and Aymara-speaking peoples, the highland region of the Andes (Bolivia, Peru, and Ecuador) has one of the oldest music forms in the Americas. Ensembles ranging from 4 to 20 members accompany dancers in religious and secular ceremonies that originated during the Incan period. Pan-pipe ensembles featuring various sizes of the instrument are especially prevalent. Because the structure of a set of pipes is such that each player can only play half of the five-tone scale, musicians must alternate notes in order to produce a complete melody. This Quechua peasant dance from Bolivia, called “Komer Chakra”, is played on several single-row antara pan pipes and is accompanied by the wankara, a large, deep-sounding double-headed drum. Komer Chakra from Memory of the Peoples"
+   }
+},
+ {
+   "id": 5,
+   "country": "Bolivia",
+   "img": {
+      "title": "Bolivia’s Harsh but Stunning Landscape",
+      "descr": "Aymara labourers head home after a long day's work in the fields near Achacachi. Although they were conquered by the Inca in the 15th century and later by Spanish invaders, these indigenous peoples have retained their own culture and language. "
+   },
+   "geo": [
+      -16.03,
+      -68.77
+   ],
+   "music": {
+      "title": "Popular Music",
+      "descr": "The indigenous people of the Andes in Bolivia have maintained much of their musical tradition, whereas elsewhere in the country, music reflects both European and native influences. Characteristics of Andean music from Bolivia include a preference for pentatonic scales with short, descending melodic phrases, commonly employing the notes of the major chord. Flutes and pan pipes give a distinctive whistling sound, usually in contrast to a rougher texture provided by drums. This example is a song by the Bolivian composer Matilde Casazola, which features elements from the indigenous music in a contemporary arrangement."
+   }
+}
+]
