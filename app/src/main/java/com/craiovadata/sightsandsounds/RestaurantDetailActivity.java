@@ -94,7 +94,7 @@ public class RestaurantDetailActivity extends AppCompatActivity
         mFirestore = FirebaseFirestore.getInstance();
 
         // Get reference to the restaurant
-        mRestaurantRef = mFirestore.collection("restaurants").document(restaurantId);
+        mRestaurantRef = mFirestore.collection(MainActivity.COLLECTION_NAME).document(restaurantId);
 
         // Get ratings
         Query ratingsQuery = mRestaurantRef

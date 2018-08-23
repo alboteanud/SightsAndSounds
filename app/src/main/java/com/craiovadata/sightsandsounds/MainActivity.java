@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements
         RestaurantAdapter.OnRestaurantSelectedListener {
 
     private static final String TAG = "MainActivity";
+    public static final String COLLECTION_NAME = "sights_and_sounds_";
 
     private static final int LIMIT = 50;
 
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements
         mFirestore = FirebaseFirestore.getInstance();
 
         // Get ${LIMIT} restaurants
-        mQuery = mFirestore.collection("restaurants")
+        mQuery = mFirestore.collection(COLLECTION_NAME)
                 .orderBy("avgRating", Query.Direction.DESCENDING)
                 .limit(LIMIT);
 
@@ -151,10 +152,11 @@ public class MainActivity extends AppCompatActivity implements
         overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_left);
     }
 
+
     @Override
     public void onFilter(Filters filters) {
         // Construct query basic query
-        Query query = mFirestore.collection("restaurants");
+        Query query = mFirestore.collection(COLLECTION_NAME);
 
         // Category (equality filter)
         if (filters.hasCategory()) {
