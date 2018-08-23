@@ -7,4 +7,5 @@
     <color name="greyPrimary">#DE000000</color>
     <color name="greySecondary">#8B000000</color>
     <color name="greyDisabled">#61000000</color>
+    <color name="gray_semi_3">#3000</color>
 </resources>

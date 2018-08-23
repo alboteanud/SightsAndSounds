@@ -86,12 +86,11 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
             Entry entry = snapshot.toObject(Entry.class);
             Resources resources = itemView.getResources();
 
-            StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("images/" + snapshot.getId() + ".jpg");
-
+            StorageReference thumbnailRef = FirebaseStorage.getInstance().getReference().child("image_thumbs/" + snapshot.getId() + "_tn.jpg");
 
             GlideApp.with(imageView.getContext())
 //                    .using(new FirebaseImageLoader())
-                    .load(storageReference)
+                    .load(thumbnailRef)
                     .into(imageView);
 
 
