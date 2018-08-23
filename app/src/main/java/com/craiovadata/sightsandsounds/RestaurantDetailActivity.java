@@ -1,6 +1,7 @@
 package com.craiovadata.sightsandsounds;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -17,7 +18,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.craiovadata.sightsandsounds.adapter.RatingAdapter;
 import com.craiovadata.sightsandsounds.model.Entry;
 import com.craiovadata.sightsandsounds.model.Rating;
@@ -41,7 +41,6 @@ import java.io.IOException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.internal.Utils;
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
 public class RestaurantDetailActivity extends AppCompatActivity
@@ -78,10 +77,6 @@ public class RestaurantDetailActivity extends AppCompatActivity
     @BindView(R.id.recycler_ratings)
     RecyclerView mRatingsRecycler;
 
-    @BindView(R.id.ic_action_play)
-    ImageView playButton;
-
-
     private RatingDialogFragment mRatingDialog;
 
     private FirebaseFirestore mFirestore;
@@ -98,7 +93,7 @@ public class RestaurantDetailActivity extends AppCompatActivity
         ButterKnife.bind(this);
 
         // Get restaurant ID from extras
-     restaurantId = getIntent().getExtras().getString(KEY_RESTAURANT_ID);
+        restaurantId = getIntent().getExtras().getString(KEY_RESTAURANT_ID);
         if (restaurantId == null) {
             throw new IllegalArgumentException("Must pass extra " + KEY_RESTAURANT_ID);
         }
@@ -147,12 +142,19 @@ public class RestaurantDetailActivity extends AppCompatActivity
         super.onStop();
 
 //        mRatingAdapter.stopListening();
-        if (mediaPlayer != null && mediaPlayer.isPlaying())
-            mediaPlayer.stop();
+
+        IntentServicePlayer.startActionResetPlayer(this);
+
         if (mRestaurantRegistration != null) {
             mRestaurantRegistration.remove();
             mRestaurantRegistration = null;
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        IntentServicePlayer.startActionSetDeleteTimer(this);
     }
 
     @Override
@@ -176,7 +178,6 @@ public class RestaurantDetailActivity extends AppCompatActivity
 
     private void onRestaurantLoaded(Entry entry) {
 
-
         mNameView.setText(entry.getImg_title());
 //        mRatingIndicator.setRating((float) entry.getAvgRating());
 //        mNumRatingsView.setText(getString(R.string.fmt_num_ratings, entry.getNumRatings()));
@@ -192,7 +193,9 @@ public class RestaurantDetailActivity extends AppCompatActivity
                 .thumbnail(GlideApp.with(mImageView.getContext()).load(thumbnailRef))
                 .into(mImageView);
 
-        tryLoadSound();
+//        checkSoundAvailability();
+        //    @OnClick (R.id.play_sound)
+//        IntentServicePlayer.startActionPlayOrStopPlayer(this, restaurantId);
     }
 
     @OnClick(R.id.restaurant_button_back)
@@ -202,7 +205,8 @@ public class RestaurantDetailActivity extends AppCompatActivity
 
     @OnClick(R.id.fab_show_rating_dialog)
     public void onAddRatingClicked(View view) {
-        mRatingDialog.show(getSupportFragmentManager(), RatingDialogFragment.TAG);
+//        mRatingDialog.show(getSupportFragmentManager(), RatingDialogFragment.TAG);
+        IntentServicePlayer.startActionPlayOrStopPlayer(this, restaurantId);
     }
 
     @Override
@@ -267,108 +271,6 @@ public class RestaurantDetailActivity extends AppCompatActivity
         if (view != null) {
             ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
                     .hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
-
-    private void tryLoadSound() {
-        StorageReference soundRef = FirebaseStorage.getInstance().getReference().child("sounds/" + restaurantId + ".mp3");
-
-        Task<Uri> downloadUrl = soundRef.getDownloadUrl();
-        downloadUrl
-                .addOnSuccessListener(new OnSuccessListener<Uri>() {
-                    @Override
-                    public void onSuccess(Uri uri) {
-                        prepareMediaPlayer(uri.toString());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-//                        LOGE(TAG, "no sound or download sound failed");
-                        playButton.setVisibility(View.GONE);
-                        if (mediaPlayer != null) {
-                            mediaPlayer.release();
-                            mediaPlayer = null;
-                        }
-                    }
-                });
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                mediaPlayer.pause();
-                mediaPlayer.seekTo(0);
-            }
-    }
-
-    private MediaPlayer mediaPlayer;
-
-
-    private void prepareMediaPlayer(final String soundUrl) {
-        if (mediaPlayer == null)
-            mediaPlayer = new MediaPlayer();
-        else
-            mediaPlayer.reset();
-        try {
-            mediaPlayer.setDataSource(soundUrl);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                playButton.setVisibility(View.VISIBLE);
-                playButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startStopMediaPlayer(soundUrl);
-                    }
-                });
-
-            }
-        });
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);  // nu e neaparat
-        mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_MEDIA)
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build());
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                mediaPlayer.seekTo(0);
-//                MainActivity.loadOrShowInterstitial(context);
-            }
-        });
-        mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(MediaPlayer mp, int what, int extra) {
-                mediaPlayer.release();
-                mediaPlayer = null;
-                return true;
-            }
-        });
-        mediaPlayer.prepareAsync();
-    }
-
-    private void startStopMediaPlayer(String soundUrl) {
-        if (mediaPlayer == null)
-            prepareMediaPlayer(soundUrl);
-        else if (mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-            mediaPlayer.seekTo(0);
-        } else {
-            try {
-//                setVolumeControlStream(AudioManager.STREAM_MUSIC);
-                mediaPlayer.start();
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-                mediaPlayer.release();
-                mediaPlayer = null;
-            }
-
         }
     }
 

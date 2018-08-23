@@ -35,7 +35,7 @@
             android:background="?attr/selectableItemBackground"
             android:layout_alignLeft="@+id/restaurant_name"
             android:layout_marginTop="16dp"
-            android:padding="8dp"
+            android:padding="4dp"
             app:srcCompat="@drawable/ic_close_white_24px" />
 
         <TextView
@@ -130,7 +130,7 @@
         app:srcCompat="@drawable/ic_add_white_24px" />
 
     <ImageView
-        android:id="@+id/ic_action_play"
+        android:id="@+id/play_sound"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/restaurant_top_card"
