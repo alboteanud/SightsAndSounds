@@ -376,7 +376,7 @@ public class MainActivity extends AppCompatActivity implements
                         json.getDouble("lat"),
                         json.getDouble("lon"));
 
-                String refId = String.valueOf(i);
+                String refId = String.valueOf(i+2); // 2 - decalajul din lista
                 DocumentReference entryRef = mFirestore.collection("sights_and_sounds_").document(refId);
                 batch.set(entryRef, entry);
 
