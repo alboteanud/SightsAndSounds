@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.craiovadata.sightsandsounds.adapter.RatingAdapter;
+import com.craiovadata.sightsandsounds.model.Entry;
 import com.craiovadata.sightsandsounds.model.Rating;
 import com.craiovadata.sightsandsounds.model.Restaurant;
 import com.craiovadata.sightsandsounds.util.RestaurantUtil;
@@ -30,6 +31,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.Transaction;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -77,6 +80,7 @@ public class RestaurantDetailActivity extends AppCompatActivity
     private ListenerRegistration mRestaurantRegistration;
 
     private RatingAdapter mRatingAdapter;
+    private String restaurantId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +89,7 @@ public class RestaurantDetailActivity extends AppCompatActivity
         ButterKnife.bind(this);
 
         // Get restaurant ID from extras
-        String restaurantId = getIntent().getExtras().getString(KEY_RESTAURANT_ID);
+     restaurantId = getIntent().getExtras().getString(KEY_RESTAURANT_ID);
         if (restaurantId == null) {
             throw new IllegalArgumentException("Must pass extra " + KEY_RESTAURANT_ID);
         }
@@ -97,35 +101,35 @@ public class RestaurantDetailActivity extends AppCompatActivity
         mRestaurantRef = mFirestore.collection(MainActivity.COLLECTION_NAME).document(restaurantId);
 
         // Get ratings
-        Query ratingsQuery = mRestaurantRef
-                .collection("ratings")
-                .orderBy("timestamp", Query.Direction.DESCENDING)
-                .limit(50);
-
-        // RecyclerView
-        mRatingAdapter = new RatingAdapter(ratingsQuery) {
-            @Override
-            protected void onDataChanged() {
-                if (getItemCount() == 0) {
-                    mRatingsRecycler.setVisibility(View.GONE);
-                    mEmptyView.setVisibility(View.VISIBLE);
-                } else {
-                    mRatingsRecycler.setVisibility(View.VISIBLE);
-                    mEmptyView.setVisibility(View.GONE);
-                }
-            }
-        };
-        mRatingsRecycler.setLayoutManager(new LinearLayoutManager(this));
-        mRatingsRecycler.setAdapter(mRatingAdapter);
-
-        mRatingDialog = new RatingDialogFragment();
+//        Query ratingsQuery = mRestaurantRef
+//                .collection("ratings")
+//                .orderBy("timestamp", Query.Direction.DESCENDING)
+//                .limit(50);
+//
+//        // RecyclerView
+//        mRatingAdapter = new RatingAdapter(ratingsQuery) {
+//            @Override
+//            protected void onDataChanged() {
+//                if (getItemCount() == 0) {
+//                    mRatingsRecycler.setVisibility(View.GONE);
+//                    mEmptyView.setVisibility(View.VISIBLE);
+//                } else {
+//                    mRatingsRecycler.setVisibility(View.VISIBLE);
+//                    mEmptyView.setVisibility(View.GONE);
+//                }
+//            }
+//        };
+//        mRatingsRecycler.setLayoutManager(new LinearLayoutManager(this));
+//        mRatingsRecycler.setAdapter(mRatingAdapter);
+//
+//        mRatingDialog = new RatingDialogFragment();
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        mRatingAdapter.startListening();
+//        mRatingAdapter.startListening();
         mRestaurantRegistration = mRestaurantRef.addSnapshotListener(this);
     }
 
@@ -133,7 +137,7 @@ public class RestaurantDetailActivity extends AppCompatActivity
     public void onStop() {
         super.onStop();
 
-        mRatingAdapter.stopListening();
+//        mRatingAdapter.stopListening();
 
         if (mRestaurantRegistration != null) {
             mRestaurantRegistration.remove();
@@ -156,21 +160,24 @@ public class RestaurantDetailActivity extends AppCompatActivity
             Log.w(TAG, "restaurant:onEvent", e);
             return;
         }
-
-        onRestaurantLoaded(snapshot.toObject(Restaurant.class));
+        Entry entry = snapshot.toObject(Entry.class);
+        onRestaurantLoaded(entry);
     }
 
-    private void onRestaurantLoaded(Restaurant restaurant) {
-        mNameView.setText(restaurant.getName());
-        mRatingIndicator.setRating((float) restaurant.getAvgRating());
-        mNumRatingsView.setText(getString(R.string.fmt_num_ratings, restaurant.getNumRatings()));
-        mCityView.setText(restaurant.getCity());
-        mCategoryView.setText(restaurant.getCategory());
-        mPriceView.setText(RestaurantUtil.getPriceString(restaurant));
+    private void onRestaurantLoaded(Entry entry) {
 
+
+        mNameView.setText(entry.getImg_title());
+//        mRatingIndicator.setRating((float) entry.getAvgRating());
+//        mNumRatingsView.setText(getString(R.string.fmt_num_ratings, entry.getNumRatings()));
+//        mCityView.setText(entry.getCity());
+//        mCategoryView.setText(entry.getCategory());
+//        mPriceView.setText(RestaurantUtil.getPriceString(entry));
+
+        StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("images/" + restaurantId + ".jpg");
         // Background image
         Glide.with(mImageView.getContext())
-                .load(restaurant.getPhoto())
+                .load(storageReference)
                 .into(mImageView);
     }
 

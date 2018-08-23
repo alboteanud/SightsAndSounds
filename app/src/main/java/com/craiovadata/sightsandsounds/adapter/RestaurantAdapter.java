@@ -8,12 +8,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.craiovadata.sightsandsounds.R;
-import com.craiovadata.sightsandsounds.model.Restaurant;
-import com.craiovadata.sightsandsounds.util.RestaurantUtil;
+import com.craiovadata.sightsandsounds.model.Entry;
+import com.craiovadata.sightsandsounds.util.GlideApp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,10 +32,13 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
     }
 
     private OnRestaurantSelectedListener mListener;
+    public StorageReference mStorageRef;
 
     public RestaurantAdapter(Query query, OnRestaurantSelectedListener listener) {
         super(query);
         mListener = listener;
+        // Initialize Storage
+        mStorageRef = FirebaseStorage.getInstance().getReference();
     }
 
     @Override
@@ -79,21 +83,25 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
         public void bind(final DocumentSnapshot snapshot,
                          final OnRestaurantSelectedListener listener) {
 
-            Restaurant restaurant = snapshot.toObject(Restaurant.class);
+            Entry entry = snapshot.toObject(Entry.class);
             Resources resources = itemView.getResources();
 
-            // Load image
-            Glide.with(imageView.getContext())
-                    .load(restaurant.getPhoto())
+            StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("images/" + snapshot.getId() + ".jpg");
+
+
+            GlideApp.with(imageView.getContext())
+//                    .using(new FirebaseImageLoader())
+                    .load(storageReference)
                     .into(imageView);
 
-            nameView.setText(restaurant.getName());
-            ratingBar.setRating((float) restaurant.getAvgRating());
-            cityView.setText(restaurant.getCity());
-            categoryView.setText(restaurant.getCategory());
-            numRatingsView.setText(resources.getString(R.string.fmt_num_ratings,
-                    restaurant.getNumRatings()));
-            priceView.setText(RestaurantUtil.getPriceString(restaurant));
+
+            nameView.setText(entry.getImg_title());
+//            ratingBar.setRating((float) entry.getAvgRating());
+//            cityView.setText(entry.getCity());
+//            categoryView.setText(entry.getCategory());
+//            numRatingsView.setText(resources.getString(R.string.fmt_num_ratings,
+//                    entry.getNumRatings()));
+//            priceView.setText(RestaurantUtil.getPriceString(entry));
 
             // Click listener
             itemView.setOnClickListener(new View.OnClickListener() {

@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements
 
         // Get ${LIMIT} restaurants
         mQuery = mFirestore.collection(COLLECTION_NAME)
-                .orderBy("avgRating", Query.Direction.DESCENDING)
+                .orderBy("country", Query.Direction.DESCENDING)
                 .limit(LIMIT);
 
         // RecyclerView
@@ -156,40 +156,40 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onFilter(Filters filters) {
         // Construct query basic query
-        Query query = mFirestore.collection(COLLECTION_NAME);
-
-        // Category (equality filter)
-        if (filters.hasCategory()) {
-            query = query.whereEqualTo(Restaurant.FIELD_CATEGORY, filters.getCategory());
-        }
-
-        // City (equality filter)
-        if (filters.hasCity()) {
-            query = query.whereEqualTo(Restaurant.FIELD_CITY, filters.getCity());
-        }
-
-        // Price (equality filter)
-        if (filters.hasPrice()) {
-            query = query.whereEqualTo(Restaurant.FIELD_PRICE, filters.getPrice());
-        }
-
-        // Sort by (orderBy with direction)
-        if (filters.hasSortBy()) {
-            query = query.orderBy(filters.getSortBy(), filters.getSortDirection());
-        }
-
-        // Limit items
-        query = query.limit(LIMIT);
-
-        // Update the query
-        mAdapter.setQuery(query);
-
-        // Set header
-        mCurrentSearchView.setText(Html.fromHtml(filters.getSearchDescription(this)));
-        mCurrentSortByView.setText(filters.getOrderDescription(this));
-
-        // Save filters
-        mViewModel.setFilters(filters);
+//        Query query = mFirestore.collection(COLLECTION_NAME);
+//
+//        // Category (equality filter)
+//        if (filters.hasCategory()) {
+//            query = query.whereEqualTo(Restaurant.FIELD_CATEGORY, filters.getCategory());
+//        }
+//
+//        // City (equality filter)
+//        if (filters.hasCity()) {
+//            query = query.whereEqualTo(Restaurant.FIELD_CITY, filters.getCity());
+//        }
+//
+//        // Price (equality filter)
+//        if (filters.hasPrice()) {
+//            query = query.whereEqualTo(Restaurant.FIELD_PRICE, filters.getPrice());
+//        }
+//
+//        // Sort by (orderBy with direction)
+//        if (filters.hasSortBy()) {
+//            query = query.orderBy(filters.getSortBy(), filters.getSortDirection());
+//        }
+//
+//        // Limit items
+//        query = query.limit(LIMIT);
+//
+//        // Update the query
+//        mAdapter.setQuery(query);
+//
+//        // Set header
+//        mCurrentSearchView.setText(Html.fromHtml(filters.getSearchDescription(this)));
+//        mCurrentSortByView.setText(filters.getOrderDescription(this));
+//
+//        // Save filters
+//        mViewModel.setFilters(filters);
     }
 
 }
