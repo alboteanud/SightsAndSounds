@@ -69,8 +69,8 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
         @BindView(R.id.restaurant_item_price)
         TextView priceView;
 
-        @BindView(R.id.restaurant_item_category)
-        TextView categoryView;
+        @BindView(R.id.item_country)
+        TextView countryView;
 
         @BindView(R.id.restaurant_item_city)
         TextView cityView;
@@ -97,7 +97,7 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
             nameView.setText(entry.getImg_title());
 //            ratingBar.setRating((float) entry.getAvgRating());
 //            cityView.setText(entry.getCity());
-//            categoryView.setText(entry.getCategory());
+            countryView.setText(entry.getCountry());
 //            numRatingsView.setText(resources.getString(R.string.fmt_num_ratings,
 //                    entry.getNumRatings()));
 //            priceView.setText(RestaurantUtil.getPriceString(entry));
