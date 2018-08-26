@@ -1,11 +1,13 @@
 package com.craiovadata.sightsandsounds;
 
 import android.content.Context;
+import android.media.AudioAttributes;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -14,11 +16,11 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.craiovadata.sightsandsounds.adapter.RatingAdapter;
+import com.craiovadata.sightsandsounds.model.Entry;
 import com.craiovadata.sightsandsounds.model.Rating;
 import com.craiovadata.sightsandsounds.model.Restaurant;
-import com.craiovadata.sightsandsounds.util.RestaurantUtil;
+import com.craiovadata.sightsandsounds.util.GlideApp;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -28,8 +30,11 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.Transaction;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,6 +47,8 @@ public class RestaurantDetailActivity extends AppCompatActivity
     private static final String TAG = "RestaurantDetail";
 
     public static final String KEY_RESTAURANT_ID = "key_restaurant_id";
+    private MediaPlayer mediaPlayer;
+    private Uri soundUri;
 
     @BindView(R.id.restaurant_image)
     ImageView mImageView;
@@ -77,6 +84,7 @@ public class RestaurantDetailActivity extends AppCompatActivity
     private ListenerRegistration mRestaurantRegistration;
 
     private RatingAdapter mRatingAdapter;
+    private String entryID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +93,8 @@ public class RestaurantDetailActivity extends AppCompatActivity
         ButterKnife.bind(this);
 
         // Get restaurant ID from extras
-        String restaurantId = getIntent().getExtras().getString(KEY_RESTAURANT_ID);
-        if (restaurantId == null) {
+        entryID = getIntent().getExtras().getString(KEY_RESTAURANT_ID);
+        if (entryID == null) {
             throw new IllegalArgumentException("Must pass extra " + KEY_RESTAURANT_ID);
         }
 
@@ -94,52 +102,64 @@ public class RestaurantDetailActivity extends AppCompatActivity
         mFirestore = FirebaseFirestore.getInstance();
 
         // Get reference to the restaurant
-        mRestaurantRef = mFirestore.collection("restaurants").document(restaurantId);
+        mRestaurantRef = mFirestore.collection(MainActivity.COLLECTION_NAME).document(entryID);
 
         // Get ratings
-        Query ratingsQuery = mRestaurantRef
-                .collection("ratings")
-                .orderBy("timestamp", Query.Direction.DESCENDING)
-                .limit(50);
-
-        // RecyclerView
-        mRatingAdapter = new RatingAdapter(ratingsQuery) {
-            @Override
-            protected void onDataChanged() {
-                if (getItemCount() == 0) {
-                    mRatingsRecycler.setVisibility(View.GONE);
-                    mEmptyView.setVisibility(View.VISIBLE);
-                } else {
-                    mRatingsRecycler.setVisibility(View.VISIBLE);
-                    mEmptyView.setVisibility(View.GONE);
-                }
-            }
-        };
-        mRatingsRecycler.setLayoutManager(new LinearLayoutManager(this));
-        mRatingsRecycler.setAdapter(mRatingAdapter);
-
-        mRatingDialog = new RatingDialogFragment();
+//        Query ratingsQuery = mRestaurantRef
+//                .collection("ratings")
+//                .orderBy("timestamp", Query.Direction.DESCENDING)
+//                .limit(50);
+//
+//        // RecyclerView
+//        mRatingAdapter = new RatingAdapter(ratingsQuery) {
+//            @Override
+//            protected void onDataChanged() {
+//                if (getItemCount() == 0) {
+//                    mRatingsRecycler.setVisibility(View.GONE);
+//                    mEmptyView.setVisibility(View.VISIBLE);
+//                } else {
+//                    mRatingsRecycler.setVisibility(View.VISIBLE);
+//                    mEmptyView.setVisibility(View.GONE);
+//                }
+//            }
+//        };
+//        mRatingsRecycler.setLayoutManager(new LinearLayoutManager(this));
+//        mRatingsRecycler.setAdapter(mRatingAdapter);
+//
+//        mRatingDialog = new RatingDialogFragment();
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        mRatingAdapter.startListening();
+//        mRatingAdapter.startListening();
         mRestaurantRegistration = mRestaurantRef.addSnapshotListener(this);
+
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mediaPlayer != null && mediaPlayer.isPlaying())
+            mediaPlayer.pause();
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        mRatingAdapter.stopListening();
+//        mRatingAdapter.stopListening();
+
+        releaseMediaPlayer();
 
         if (mRestaurantRegistration != null) {
             mRestaurantRegistration.remove();
             mRestaurantRegistration = null;
         }
     }
+
 
     @Override
     public void finish() {
@@ -156,22 +176,30 @@ public class RestaurantDetailActivity extends AppCompatActivity
             Log.w(TAG, "restaurant:onEvent", e);
             return;
         }
-
-        onRestaurantLoaded(snapshot.toObject(Restaurant.class));
+        Entry entry = snapshot.toObject(Entry.class);
+        if (entry != null) {
+            onRestaurantLoaded(entry);
+        }
     }
 
-    private void onRestaurantLoaded(Restaurant restaurant) {
-        mNameView.setText(restaurant.getName());
-        mRatingIndicator.setRating((float) restaurant.getAvgRating());
-        mNumRatingsView.setText(getString(R.string.fmt_num_ratings, restaurant.getNumRatings()));
-        mCityView.setText(restaurant.getCity());
-        mCategoryView.setText(restaurant.getCategory());
-        mPriceView.setText(RestaurantUtil.getPriceString(restaurant));
+    private void onRestaurantLoaded(Entry entry) {
 
+        mNameView.setText(entry.getImg_title());
+//        mRatingIndicator.setRating((float) entry.getAvgRating());
+//        mNumRatingsView.setText(getString(R.string.fmt_num_ratings, entry.getNumRatings()));
+//        mCityView.setText(entry.getCity());
+//        mCategoryView.setText(entry.getCategory());
+//        mPriceView.setText(RestaurantUtil.getPriceString(entry));
+
+        StorageReference imgRef = FirebaseStorage.getInstance().getReference().child("images/" + entryID + ".jpg");
+        StorageReference thumbnailRef = FirebaseStorage.getInstance().getReference().child("image_thumbs/" + entryID + "_tn.jpg");
         // Background image
-        Glide.with(mImageView.getContext())
-                .load(restaurant.getPhoto())
+        GlideApp.with(mImageView.getContext())
+                .load(imgRef)
+                .thumbnail(GlideApp.with(mImageView.getContext()).load(thumbnailRef))
                 .into(mImageView);
+
+        initSoundSource(entryID);
     }
 
     @OnClick(R.id.restaurant_button_back)
@@ -181,7 +209,19 @@ public class RestaurantDetailActivity extends AppCompatActivity
 
     @OnClick(R.id.fab_show_rating_dialog)
     public void onAddRatingClicked(View view) {
-        mRatingDialog.show(getSupportFragmentManager(), RatingDialogFragment.TAG);
+//        mRatingDialog.show(getSupportFragmentManager(), RatingDialogFragment.TAG);
+    }
+
+    @OnClick(R.id.play_sound)
+    public void onPlayClicked(View view) {
+        if (mediaPlayer == null) {
+            initMediaPlayer();
+        } else if (mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            mediaPlayer.seekTo(0);
+        } else {
+            mediaPlayer.start();
+        }
     }
 
     @Override
@@ -248,4 +288,68 @@ public class RestaurantDetailActivity extends AppCompatActivity
                     .hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
+
+    private void initSoundSource(String id) {
+        StorageReference soundRef = FirebaseStorage.getInstance().getReference().child("sounds/" + id + "_x264.mp4");
+        Task<Uri> downloadUrl = soundRef.getDownloadUrl();
+        downloadUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                soundUri = uri;
+//                findViewById(R.id.play_sound).setVisibility(View.VISIBLE);
+                initMediaPlayer();
+            }
+        })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        findViewById(R.id.play_sound).setVisibility(View.GONE);
+                    }
+                });
+    }
+
+    void releaseMediaPlayer() {
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
+
+    private void initMediaPlayer() {
+        mediaPlayer = new MediaPlayer();
+//        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build());
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.seekTo(0);
+            }
+        });
+        mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+                releaseMediaPlayer();
+                return true;
+            }
+        });
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                findViewById(R.id.play_sound).setVisibility(View.VISIBLE);
+//                mediaPlayer.start();
+            }
+        });
+        try {
+            mediaPlayer.setDataSource(this, soundUri);
+            mediaPlayer.prepareAsync();
+        } catch (IOException e) {
+            e.printStackTrace();
+            releaseMediaPlayer();
+        }
+    }
+
+
 }

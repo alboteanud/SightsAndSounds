@@ -179,32 +179,12 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             case R.id.menu_sign_out:
                 AuthUI.getInstance().signOut(this);
-                startSignIn();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            IdpResponse response = IdpResponse.fromResultIntent(data);
-            mViewModel.setIsSigningIn(false);
 
-            if (resultCode != RESULT_OK) {
-                if (response == null) {
-                    // User pressed the back button.
-                    finish();
-                } else if (response.getError() != null
-                        && response.getError().getErrorCode() == ErrorCodes.NO_NETWORK) {
-                    showSignInErrorDialog(R.string.message_no_network);
-                } else {
-                    showSignInErrorDialog(R.string.message_unknown);
-                }
-            }
-        }
-    }
 
     @OnClick(R.id.filter_bar)
     public void onFilterClicked() {
@@ -272,39 +252,6 @@ public class MainActivity extends AppCompatActivity implements
         return (!mViewModel.getIsSigningIn() && FirebaseAuth.getInstance().getCurrentUser() == null);
     }
 
-    private void startSignIn() {
-        // Sign in with FirebaseUI
-        Intent intent = AuthUI.getInstance().createSignInIntentBuilder()
-                .setAvailableProviders(Collections.singletonList(
-                        new AuthUI.IdpConfig.EmailBuilder().build()))
-                .setIsSmartLockEnabled(false)
-                .build();
-
-        startActivityForResult(intent, RC_SIGN_IN);
-        mViewModel.setIsSigningIn(true);
-    }
-
-
-    private void showSignInErrorDialog(@StringRes int message) {
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(R.string.title_sign_in_error)
-                .setMessage(message)
-                .setCancelable(false)
-                .setPositiveButton(R.string.option_retry, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        startSignIn();
-                    }
-                })
-                .setNegativeButton(R.string.option_exit, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        finish();
-                    }
-                }).create();
-
-        dialog.show();
-    }
 
     private String loadJSONFromAsset() {
         String json = null;
