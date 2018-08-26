@@ -10,10 +10,14 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.craiovadata.sightsandsounds.R;
+import com.craiovadata.sightsandsounds.model.Entry;
 import com.craiovadata.sightsandsounds.model.Restaurant;
+import com.craiovadata.sightsandsounds.util.GlideApp;
 import com.craiovadata.sightsandsounds.util.RestaurantUtil;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,10 +35,13 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
     }
 
     private OnRestaurantSelectedListener mListener;
+    public StorageReference mStorageRef;
 
     public RestaurantAdapter(Query query, OnRestaurantSelectedListener listener) {
         super(query);
         mListener = listener;
+        // Initialize Storage
+        mStorageRef = FirebaseStorage.getInstance().getReference();
     }
 
     @Override
@@ -65,8 +72,8 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
         @BindView(R.id.restaurant_item_price)
         TextView priceView;
 
-        @BindView(R.id.restaurant_item_category)
-        TextView categoryView;
+        @BindView(R.id.item_country)
+        TextView countryView;
 
         @BindView(R.id.restaurant_item_city)
         TextView cityView;
@@ -79,21 +86,24 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
         public void bind(final DocumentSnapshot snapshot,
                          final OnRestaurantSelectedListener listener) {
 
-            Restaurant restaurant = snapshot.toObject(Restaurant.class);
+            Entry entry = snapshot.toObject(Entry.class);
             Resources resources = itemView.getResources();
 
-            // Load image
-            Glide.with(imageView.getContext())
-                    .load(restaurant.getPhoto())
+            StorageReference thumbnailRef = FirebaseStorage.getInstance().getReference().child("image_thumbs/" + snapshot.getId() + "_tn.jpg");
+
+            GlideApp.with(imageView.getContext())
+//                    .using(new FirebaseImageLoader())
+                    .load(thumbnailRef)
                     .into(imageView);
 
-            nameView.setText(restaurant.getName());
-            ratingBar.setRating((float) restaurant.getAvgRating());
-            cityView.setText(restaurant.getCity());
-            categoryView.setText(restaurant.getCategory());
-            numRatingsView.setText(resources.getString(R.string.fmt_num_ratings,
-                    restaurant.getNumRatings()));
-            priceView.setText(RestaurantUtil.getPriceString(restaurant));
+
+            nameView.setText(entry.getImg_title());
+//            ratingBar.setRating((float) entry.getAvgRating());
+//            cityView.setText(entry.getCity());
+            countryView.setText(entry.getCountry());
+//            numRatingsView.setText(resources.getString(R.string.fmt_num_ratings,
+//                    entry.getNumRatings()));
+//            priceView.setText(RestaurantUtil.getPriceString(entry));
 
             // Click listener
             itemView.setOnClickListener(new View.OnClickListener() {

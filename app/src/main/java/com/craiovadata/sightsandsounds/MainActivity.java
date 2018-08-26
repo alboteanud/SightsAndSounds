@@ -58,8 +58,7 @@ public class MainActivity extends AppCompatActivity implements
         RestaurantAdapter.OnRestaurantSelectedListener {
 
     private static final String TAG = "MainActivity";
-
-    private static final int RC_SIGN_IN = 9001;
+    public static final String COLLECTION_NAME = "sights_and_sounds_";
 
     private static final int LIMIT = 50;
 
@@ -103,8 +102,8 @@ public class MainActivity extends AppCompatActivity implements
         mFirestore = FirebaseFirestore.getInstance();
 
         // Get ${LIMIT} restaurants
-        mQuery = mFirestore.collection("restaurants")
-                .orderBy("avgRating", Query.Direction.DESCENDING)
+        mQuery = mFirestore.collection(COLLECTION_NAME)
+                .orderBy("country", Query.Direction.DESCENDING)
                 .limit(LIMIT);
 
         // RecyclerView
@@ -141,10 +140,10 @@ public class MainActivity extends AppCompatActivity implements
         super.onStart();
 
         // Start sign in if necessary
-        if (shouldStartSignIn()) {
-            startSignIn();
-            return;
-        }
+//        if (shouldStartSignIn()) {
+//            startSignIn();
+//            return;
+//        }
 
         // Apply filters
         onFilter(mViewModel.getFilters());
@@ -233,41 +232,40 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onFilter(Filters filters) {
         // Construct query basic query
-//        Query query = mFirestore.collection("restaurants");
-        Query query = mFirestore.collection("sights_and_sounds");
-
-        // Category (equality filter)
-        if (filters.hasCategory()) {
-            query = query.whereEqualTo(Restaurant.FIELD_CATEGORY, filters.getCategory());
-        }
-
-        // City (equality filter)
-        if (filters.hasCity()) {
-            query = query.whereEqualTo(Restaurant.FIELD_CITY, filters.getCity());
-        }
-
-        // Price (equality filter)
-        if (filters.hasPrice()) {
-            query = query.whereEqualTo(Restaurant.FIELD_PRICE, filters.getPrice());
-        }
-
-        // Sort by (orderBy with direction)
-        if (filters.hasSortBy()) {
-            query = query.orderBy(filters.getSortBy(), filters.getSortDirection());
-        }
-
-        // Limit items
-        query = query.limit(LIMIT);
-
-        // Update the query
-        mAdapter.setQuery(query);
-
-        // Set header
-        mCurrentSearchView.setText(Html.fromHtml(filters.getSearchDescription(this)));
-        mCurrentSortByView.setText(filters.getOrderDescription(this));
-
-        // Save filters
-        mViewModel.setFilters(filters);
+//        Query query = mFirestore.collection(COLLECTION_NAME);
+//
+//        // Category (equality filter)
+//        if (filters.hasCategory()) {
+//            query = query.whereEqualTo(Restaurant.FIELD_CATEGORY, filters.getCategory());
+//        }
+//
+//        // City (equality filter)
+//        if (filters.hasCity()) {
+//            query = query.whereEqualTo(Restaurant.FIELD_CITY, filters.getCity());
+//        }
+//
+//        // Price (equality filter)
+//        if (filters.hasPrice()) {
+//            query = query.whereEqualTo(Restaurant.FIELD_PRICE, filters.getPrice());
+//        }
+//
+//        // Sort by (orderBy with direction)
+//        if (filters.hasSortBy()) {
+//            query = query.orderBy(filters.getSortBy(), filters.getSortDirection());
+//        }
+//
+//        // Limit items
+//        query = query.limit(LIMIT);
+//
+//        // Update the query
+//        mAdapter.setQuery(query);
+//
+//        // Set header
+//        mCurrentSearchView.setText(Html.fromHtml(filters.getSearchDescription(this)));
+//        mCurrentSortByView.setText(filters.getOrderDescription(this));
+//
+//        // Save filters
+//        mViewModel.setFilters(filters);
     }
 
     private boolean shouldStartSignIn() {

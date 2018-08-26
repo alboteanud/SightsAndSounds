@@ -53,7 +53,7 @@
         tools:text="(10)" />
 
     <TextView
-        android:id="@+id/restaurant_item_category"
+        android:id="@+id/item_country"
         style="@style/AppTheme.Body1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -65,8 +65,8 @@
     <TextView
         android:id="@+id/restaurant_item_city_divider"
         style="@style/AppTheme.TextDivider"
-        android:layout_alignTop="@+id/restaurant_item_category"
-        android:layout_toRightOf="@+id/restaurant_item_category"
+        android:layout_alignTop="@+id/item_country"
+        android:layout_toRightOf="@+id/item_country"
         android:text="@string/divider_bullet" />
 
     <TextView
@@ -74,7 +74,7 @@
         style="@style/AppTheme.Body1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/restaurant_item_category"
+        android:layout_alignTop="@+id/item_country"
         android:layout_toRightOf="@+id/restaurant_item_city_divider"
         android:textColor="@color/greySecondary"
         tools:text="San Francisco" />
