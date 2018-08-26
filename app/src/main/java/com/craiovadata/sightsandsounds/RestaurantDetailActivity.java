@@ -65,8 +65,8 @@ public class RestaurantDetailActivity extends AppCompatActivity
     @BindView(R.id.restaurant_city)
     TextView mCityView;
 
-    @BindView(R.id.restaurant_category)
-    TextView mCategoryView;
+    @BindView(R.id.item_country)
+    TextView countryView;
 
     @BindView(R.id.restaurant_price)
     TextView mPriceView;
@@ -188,7 +188,7 @@ public class RestaurantDetailActivity extends AppCompatActivity
 //        mRatingIndicator.setRating((float) entry.getAvgRating());
 //        mNumRatingsView.setText(getString(R.string.fmt_num_ratings, entry.getNumRatings()));
 //        mCityView.setText(entry.getCity());
-//        mCategoryView.setText(entry.getCategory());
+        countryView.setText(entry.getCountry());
 //        mPriceView.setText(RestaurantUtil.getPriceString(entry));
 
         StorageReference imgRef = FirebaseStorage.getInstance().getReference().child("images/" + entryID + ".jpg");
@@ -290,7 +290,7 @@ public class RestaurantDetailActivity extends AppCompatActivity
     }
 
     private void initSoundSource(String id) {
-        StorageReference soundRef = FirebaseStorage.getInstance().getReference().child("sounds/" + id + ".mp3");
+        StorageReference soundRef = FirebaseStorage.getInstance().getReference().child("sounds/" + id + "_x264.mp4");
         Task<Uri> downloadUrl = soundRef.getDownloadUrl();
         downloadUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
