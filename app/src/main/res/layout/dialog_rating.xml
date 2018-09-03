@@ -12,6 +12,14 @@
         android:layout_marginBottom="8dp"
         android:text="@string/filter_add_review" />
 
+    <EditText
+        android:id="@+id/item_form_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:hint="@string/hint_username"
+        android:layout_marginBottom="8dp"/>
+
     <me.zhanghai.android.materialratingbar.MaterialRatingBar
         android:id="@+id/restaurant_form_rating"
         style="@style/Widget.MaterialRatingBar.RatingBar"
@@ -24,7 +32,7 @@
         android:minHeight="24dp" />
 
     <EditText
-        android:id="@+id/restaurant_form_text"
+        android:id="@+id/item_form_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

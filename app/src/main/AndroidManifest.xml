@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".RestaurantDetailActivity"
+            android:name=".DetailActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Activity" />
     </application>

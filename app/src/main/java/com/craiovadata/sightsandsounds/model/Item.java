@@ -4,7 +4,7 @@ package com.craiovadata.sightsandsounds.model;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
-public class Entry {
+public class Item {
 
     private String country;
     private String img_title;
@@ -13,8 +13,12 @@ public class Entry {
     private String music_description;
     private double lat;
     private double lon;
+    private int numRatings;
+    private double avgRating;
 
-    public Entry(String country, String img_title, String img_description, String music_title, String music_description, double lat, double lon) {
+    public Item(String country, String img_title, String img_description,
+                String music_title, String music_description, double lat, double lon,
+                int numRatings, double avgRating) {
         this.country = country;
         this.img_title = img_title;
         this.img_description = img_description;
@@ -22,9 +26,11 @@ public class Entry {
         this.music_description = music_description;
         this.lat = lat;
         this.lon = lon;
+        this.numRatings = numRatings;
+        this.avgRating = avgRating;
     }
 
-    public Entry()  { }
+    public Item()  { }
 
     public double getLat() {
         return lat;
@@ -81,4 +87,21 @@ public class Entry {
     public void setMusic_description(String music_description) {
         this.music_description = music_description;
     }
+
+    public int getNumRatings() {
+        return numRatings;
+    }
+
+    public void setNumRatings(int numRatings) {
+        this.numRatings = numRatings;
+    }
+
+    public double getAvgRating() {
+        return avgRating;
+    }
+
+    public void setAvgRating(double avgRating) {
+        this.avgRating = avgRating;
+    }
+
 }

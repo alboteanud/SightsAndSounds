@@ -2,15 +2,21 @@ package com.craiovadata.sightsandsounds;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.craiovadata.sightsandsounds.model.Rating;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,8 +33,11 @@ public class RatingDialogFragment extends DialogFragment {
     @BindView(R.id.restaurant_form_rating)
     MaterialRatingBar mRatingBar;
 
-    @BindView(R.id.restaurant_form_text)
+    @BindView(R.id.item_form_text)
     EditText mRatingText;
+
+    @BindView(R.id.item_form_username)
+    EditText usernameText;
 
     interface RatingListener {
 
@@ -69,14 +78,32 @@ public class RatingDialogFragment extends DialogFragment {
 
     @OnClick(R.id.restaurant_form_button)
     public void onSubmitClicked(View view) {
-        Rating rating = new Rating(
-                FirebaseAuth.getInstance().getCurrentUser(),
-                mRatingBar.getRating(),
-                mRatingText.getText().toString());
 
-        if (mRatingListener != null) {
-            mRatingListener.onRating(rating);
-        }
+        final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth.signInAnonymously().addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d(TAG, "signInAnonymously:success");
+                    FirebaseUser user = firebaseAuth.getCurrentUser();
+//                            updateUI(user);
+
+                    Rating rating = new Rating(
+                            user, usernameText.getText().toString(),
+                            mRatingBar.getRating(),
+                            mRatingText.getText().toString());
+
+                    if (mRatingListener != null) {
+                        mRatingListener.onRating(rating);
+                    }
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w(TAG, "signInAnonymously:failure", task.getException());
+//                            updateUI(null);
+                }
+            }
+        });
 
         dismiss();
     }

@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.craiovadata.sightsandsounds.R;
-import com.craiovadata.sightsandsounds.model.Entry;
+import com.craiovadata.sightsandsounds.model.Item;
 import com.craiovadata.sightsandsounds.util.GlideApp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
@@ -23,18 +23,18 @@ import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 /**
  * RecyclerView adapter for a list of Restaurants.
  */
-public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHolder> {
+public class ItemAdapter extends FirestoreAdapter<ItemAdapter.ViewHolder> {
 
-    public interface OnRestaurantSelectedListener {
+    public interface OnItemSelectedListener {
 
         void onRestaurantSelected(DocumentSnapshot restaurant);
 
     }
 
-    private OnRestaurantSelectedListener mListener;
+    private OnItemSelectedListener mListener;
     public StorageReference mStorageRef;
 
-    public RestaurantAdapter(Query query, OnRestaurantSelectedListener listener) {
+    public ItemAdapter(Query query, OnItemSelectedListener listener) {
         super(query);
         mListener = listener;
         // Initialize Storage
@@ -44,7 +44,7 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new ViewHolder(inflater.inflate(R.layout.item_restaurant, parent, false));
+        return new ViewHolder(inflater.inflate(R.layout.item_entry, parent, false));
     }
 
     @Override
@@ -81,9 +81,9 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
         }
 
         public void bind(final DocumentSnapshot snapshot,
-                         final OnRestaurantSelectedListener listener) {
+                         final OnItemSelectedListener listener) {
 
-            Entry entry = snapshot.toObject(Entry.class);
+            Item item = snapshot.toObject(Item.class);
             Resources resources = itemView.getResources();
 
             StorageReference thumbnailRef = FirebaseStorage.getInstance().getReference().child("image_thumbs/" + snapshot.getId() + "_tn.jpg");
@@ -94,13 +94,13 @@ public class RestaurantAdapter extends FirestoreAdapter<RestaurantAdapter.ViewHo
                     .into(imageView);
 
 
-            nameView.setText(entry.getImg_title());
-//            ratingBar.setRating((float) entry.getAvgRating());
-//            cityView.setText(entry.getCity());
-            countryView.setText(entry.getCountry());
-//            numRatingsView.setText(resources.getString(R.string.fmt_num_ratings,
-//                    entry.getNumRatings()));
-//            priceView.setText(RestaurantUtil.getPriceString(entry));
+            nameView.setText(item.getImg_title());
+            ratingBar.setRating((float) item.getAvgRating());
+//            cityView.setText(item.getCity());
+            countryView.setText(item.getCountry());
+            numRatingsView.setText(resources.getString(R.string.fmt_num_ratings,
+                    item.getNumRatings()));
+//            priceView.setText(RestaurantUtil.getPriceString(item));
 
             // Click listener
             itemView.setOnClickListener(new View.OnClickListener() {

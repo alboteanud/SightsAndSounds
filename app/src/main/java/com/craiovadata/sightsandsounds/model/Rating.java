@@ -19,13 +19,27 @@ public class Rating {
     private @ServerTimestamp
     Date timestamp;
 
-    public Rating() {}
+    public Rating() {
+    }
 
     public Rating(FirebaseUser user, double rating, String text) {
         this.userId = user.getUid();
         this.userName = user.getDisplayName();
         if (TextUtils.isEmpty(this.userName)) {
             this.userName = user.getEmail();
+        }
+
+        this.rating = rating;
+        this.text = text;
+    }
+
+    public Rating(FirebaseUser user, String userName, double rating, String text) {
+        this.userId = user.getUid();
+        this.userName = user.getDisplayName();
+        if (TextUtils.isEmpty(this.userName)) {
+            if (userName.equals(""))
+                userName = "User";
+            this.userName = userName;
         }
 
         this.rating = rating;

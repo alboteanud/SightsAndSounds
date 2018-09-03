@@ -58,7 +58,7 @@ import static android.support.test.espresso.Espresso.openActionBarOverflowOrOpti
         .clickAndWaitForNewWindow(TIMEOUT);
 
     // Click add review
-    getById("fab_show_rating_dialog").click();
+    getById("fab_play_sound").click();
 
     //Write a review
     getById("restaurant_form_text").setText("\uD83D\uDE0E\uD83D\uDE00");
