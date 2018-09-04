@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.menu_add_ratings:
                 onAddRatingsClicked();
                 break;
-                case R.id.menu_calc_avrg:
+            case R.id.menu_calc_avrg:
                 onUpdateAvregeRatingClicked();
                 break;
         }
@@ -327,66 +327,54 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
+    // update avrege. To repaire mystake - avrgRating was NaN for some countries
     void onUpdateAvregeRatingClicked() {
-//        for (int i = 0; i < 319; i++) {
-//            String refId = String.valueOf(i + 2); // inclus decalajul din lista
-//            final DocumentReference restaurantRef = mFirestore.collection("sights_and_sounds_").document(refId);
-//
-//            mFirestore.runTransaction(new Transaction.Function<Void>() {
-//                @Override
-//                public Void apply(Transaction transaction) throws FirebaseFirestoreException {
-//                    Entry entry = transaction.get(restaurantRef).toObject(Entry.class);
-//
-//                    CollectionReference ratingsPath = restaurantRef.collection("ratings");
-//
-//
-//                    List<Rating> ratings = transaction.get();
-//
-//
-//                    double newAvgRating = (oldRatingTotal + RatingUtil.getTotalRating(randomRatings)) / newNumRatings;
-//
-//
-//                    entry.setAvgRating(newAvgRating);
-//
-//                    // Commit to Firestore
-//                    transaction.set(restaurantRef, entry);
-//
-//                    // Add ratings to subcollection
-//                    for (Rating rating : randomRatings) {
-//                        final DocumentReference ratingRef = restaurantRef.collection("ratings").document();
-//                        transaction.set(ratingRef, rating);
-//                    }
-//                    return null;
-//                }
-//            });
-//
-//
-//            CollectionReference ratingsPath = mFirestore.collection("ratings");
-//
-//
-//        }
-
-
-        mFirestore.collection("sights_and_sounds_")
+        mFirestore.collection(MainActivity.COLLECTION_NAME)
                 .whereEqualTo("avgRating", NaN)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.d(TAG, document.getId() + " => " + document.getData());
-                                Log.d(TAG, document.getId() + " => " + document.);
+                            for (final QueryDocumentSnapshot document : task.getResult()) {
+//                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                final Entry entry = document.toObject(Entry.class);
+
+                                final DocumentReference itemRef = mFirestore.collection(MainActivity.COLLECTION_NAME).document(document.getId());
+                                Query ratingsQuery = itemRef.collection("ratings");
+
+                                ratingsQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            double sum = 0.0;
+                                            int numRatings = task.getResult().size();
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+
+//                                                Log.d(TAG, document.getId() + " rating => " + document.getData());
+                                                Rating rating = document.toObject(Rating.class);
+                                                sum += rating.getRating();
+
+                                            }
+                                            double avrg = sum / numRatings;
+                                            Log.d(TAG, entry.getCountry() + " avregeRating: " + avrg + "  din " + numRatings);
+
+                                            entry.setAvgRating(avrg);
+                                            itemRef.set(entry);
+
+                                        } else {
+                                            Log.d(TAG, "Error getting ratings: ", task.getException());
+                                        }
+                                    }
+                                });
+
+
                             }
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
                     }
                 });
-
-
-
-
 
 
     }
@@ -406,8 +394,12 @@ public class MainActivity extends AppCompatActivity implements
                 // Compute new number of ratings
                 int newNumRatings = entry.getNumRatings() + randomRatings.size();
 
-                // Compute new average rating
-                double oldRatingTotal = entry.getAvgRating() * entry.getNumRatings();
+                double oldRatingTotal = 0.0;
+                if (entry.getAvgRating() != NaN){
+                    // Compute new average rating
+                 oldRatingTotal = entry.getAvgRating() * entry.getNumRatings();
+                }
+
                 double newAvgRating = (oldRatingTotal + RatingUtil.getTotalRating(randomRatings)) / newNumRatings;
 
                 // Set new restaurant info
