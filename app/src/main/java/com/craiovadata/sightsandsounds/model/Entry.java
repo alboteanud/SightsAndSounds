@@ -11,36 +11,41 @@ public class Entry {
     private String img_description;
     private String music_title;
     private String music_description;
-    private double lat;
-    private double lon;
+    //    private double lat;
+//    private double lon;
+    private int numRatings;
+    private double avgRating;
 
-    public Entry(String country, String img_title, String img_description, String music_title, String music_description, double lat, double lon) {
+    public Entry(String country, String img_title, String img_description, String music_title, String music_description, int numRatings, double avgRating) {
         this.country = country;
         this.img_title = img_title;
         this.img_description = img_description;
         this.music_title = music_title;
         this.music_description = music_description;
-        this.lat = lat;
-        this.lon = lon;
+//        this.lat = lat;
+//        this.lon = lon;
+        this.numRatings = numRatings;
+        this.avgRating = avgRating;
     }
 
-    public Entry()  { }
-
-    public double getLat() {
-        return lat;
+    public Entry() {
     }
 
-    public void setLat(double lat) {
-        this.lat = lat;
-    }
+//    public double getLat() {
+//        return lat;
+//    }
 
-    public double getLon() {
-        return lon;
-    }
-
-    public void setLon(double lon) {
-        this.lon = lon;
-    }
+//    public void setLat(double lat) {
+//        this.lat = lat;
+//    }
+//
+//    public double getLon() {
+//        return lon;
+//    }
+//
+//    public void setLon(double lon) {
+//        this.lon = lon;
+//    }
 
     public String getCountry() {
         return country;
@@ -81,4 +86,21 @@ public class Entry {
     public void setMusic_description(String music_description) {
         this.music_description = music_description;
     }
+
+    public int getNumRatings() {
+        return numRatings;
+    }
+
+    public void setNumRatings(int numRatings) {
+        this.numRatings = numRatings;
+    }
+
+    public double getAvgRating() {
+        return avgRating;
+    }
+
+    public void setAvgRating(double avgRating) {
+        this.avgRating = avgRating;
+    }
+
 }

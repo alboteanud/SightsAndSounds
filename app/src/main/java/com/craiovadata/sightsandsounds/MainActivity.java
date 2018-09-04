@@ -33,11 +33,15 @@ import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 import com.google.firebase.firestore.WriteBatch;
 
 import org.json.JSONArray;
@@ -48,10 +52,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static java.lang.Double.NaN;
 
 public class MainActivity extends AppCompatActivity implements
         FilterDialogFragment.FilterListener,
@@ -180,10 +187,15 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.menu_sign_out:
                 AuthUI.getInstance().signOut(this);
                 break;
+            case R.id.menu_add_ratings:
+                onAddRatingsClicked();
+                break;
+                case R.id.menu_calc_avrg:
+                onUpdateAvregeRatingClicked();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
-
 
 
     @OnClick(R.id.filter_bar)
@@ -259,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements
         try {
             file = getAssets().open("data.json");
             byte[] buffer = new byte[file.available()];
-            file.read(buffer);
+            int bytesRead = file.read(buffer);
             file.close();
             json = new String(buffer, "UTF-8");
 
@@ -303,27 +315,149 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
+    private void onAddRatingsClicked() {
+        Random random = new Random();
+        for (int i = 0; i < 319; i++) {
+            String refId = String.valueOf(i + 2); // inclus decalajul din lista
+            DocumentReference entryRef = mFirestore.collection("sights_and_sounds_").document(refId);
+
+            List<Rating> randomRatings = RatingUtil.getRandomList(1 + random.nextInt(3));
+            addRatings(entryRef, randomRatings);
+        }
+
+    }
+
+    void onUpdateAvregeRatingClicked() {
+//        for (int i = 0; i < 319; i++) {
+//            String refId = String.valueOf(i + 2); // inclus decalajul din lista
+//            final DocumentReference restaurantRef = mFirestore.collection("sights_and_sounds_").document(refId);
+//
+//            mFirestore.runTransaction(new Transaction.Function<Void>() {
+//                @Override
+//                public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+//                    Entry entry = transaction.get(restaurantRef).toObject(Entry.class);
+//
+//                    CollectionReference ratingsPath = restaurantRef.collection("ratings");
+//
+//
+//                    List<Rating> ratings = transaction.get();
+//
+//
+//                    double newAvgRating = (oldRatingTotal + RatingUtil.getTotalRating(randomRatings)) / newNumRatings;
+//
+//
+//                    entry.setAvgRating(newAvgRating);
+//
+//                    // Commit to Firestore
+//                    transaction.set(restaurantRef, entry);
+//
+//                    // Add ratings to subcollection
+//                    for (Rating rating : randomRatings) {
+//                        final DocumentReference ratingRef = restaurantRef.collection("ratings").document();
+//                        transaction.set(ratingRef, rating);
+//                    }
+//                    return null;
+//                }
+//            });
+//
+//
+//            CollectionReference ratingsPath = mFirestore.collection("ratings");
+//
+//
+//        }
+
+
+        mFirestore.collection("sights_and_sounds_")
+                .whereEqualTo("avgRating", NaN)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                Log.d(TAG, document.getId() + " => " + document.);
+                            }
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+
+
+
+
+
+
+    }
+
+
+    private Task<Void> addRatings(final DocumentReference restaurantRef, final List<Rating> randomRatings) {
+        // Create reference for new rating, for use inside the transaction
+
+
+        // In a transaction, add the new rating and update the aggregate totals
+        return mFirestore.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+                Entry entry = transaction.get(restaurantRef).toObject(Entry.class);
+
+
+                // Compute new number of ratings
+                int newNumRatings = entry.getNumRatings() + randomRatings.size();
+
+                // Compute new average rating
+                double oldRatingTotal = entry.getAvgRating() * entry.getNumRatings();
+                double newAvgRating = (oldRatingTotal + RatingUtil.getTotalRating(randomRatings)) / newNumRatings;
+
+                // Set new restaurant info
+                entry.setNumRatings(newNumRatings);
+                entry.setAvgRating(newAvgRating);
+
+                // Commit to Firestore
+                transaction.set(restaurantRef, entry);
+
+                // Add ratings to subcollection
+                for (Rating rating : randomRatings) {
+                    final DocumentReference ratingRef = restaurantRef.collection("ratings").document();
+                    transaction.set(ratingRef, rating);
+                }
+
+                return null;
+            }
+        });
+    }
+
     private void onAddSightsAndSoundsClicked() {
         WriteBatch batch = mFirestore.batch();
         try {
             String jsonString = loadJSONFromAsset();
             JSONArray jsonArray = new JSONArray(jsonString);
-
+            Random random = new Random();
             for (int i = 0; i < jsonArray.length(); i++) {
 
                 JSONObject json = jsonArray.getJSONObject(i);
-                Entry entry = new Entry(
-                        json.getString("country"),
-                        json.getString("img_title"),
-                        json.getString("img_description"),
-                        json.getString("music_title"),
-                        json.getString("music_description"),
-                        json.getDouble("lat"),
-                        json.getDouble("lon"));
+//                Entry entry = new Entry(
+//                        json.getString("country"),
+//                        json.getString("img_title"),
+//                        json.getString("img_description"),
+//                        json.getString("music_title"),
+//                        json.getString("music_description"),
+//                        random.nextInt(20), );
+//                        json.getDouble("lat"),
+//                        json.getDouble("lon"));
+                Entry entry1 = new Entry();
+                entry1.setCountry(json.getString("country"));
+                entry1.setImg_title(json.getString("img_title"));
+                entry1.setImg_description(json.getString("img_description"));
+                entry1.setMusic_title(json.getString("music_title"));
+                entry1.setMusic_description(json.getString("music_description"));
+                entry1.setNumRatings(random.nextInt(20));
 
-                String refId = String.valueOf(i+2); // 2 - decalajul din lista
+
+                String refId = String.valueOf(i + 2); // 2 - decalajul din lista
                 DocumentReference entryRef = mFirestore.collection("sights_and_sounds_").document(refId);
-                batch.set(entryRef, entry);
+                batch.set(entryRef, entry1);
 
             }
         } catch (JSONException e) {
