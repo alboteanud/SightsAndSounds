@@ -1,9 +1,9 @@
 # SightsAndSounds
 Android app - Sights and Sounds of the world
 
-TO DO in futer launches
+TODOs
 
-- Login with Google - to post, edit a review
+- Login with Google - to post, edit reviews
 - Search button in MainActivity
 - Cleanup resources
 - Test on tablets
