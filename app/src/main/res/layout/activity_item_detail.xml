@@ -1,180 +1,212 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/myDetailCoordinatorLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#E0E0E0"
-    tools:context=".DetailActivity">
+    android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@+id/restaurant_top_card"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="4dp">
+        android:layout_height="match_parent"
+        android:background="#E0E0E0"
+        tools:context=".DetailActivity"
+        android:id="@+id/relativeLayout_detail">
 
-        <ImageView
-            android:id="@+id/item_image"
+        <RelativeLayout
+            android:id="@+id/restaurant_top_card"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/item_img_width"
-            tools:src="@drawable/food_1"
-            android:scaleType="centerCrop"/>
+            android:layout_height="wrap_content"
+            android:elevation="4dp">
 
-        <!--<View-->
+            <ImageView
+                android:id="@+id/item_image"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/item_img_width"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/food_1" />
+
+            <!--<View-->
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="@dimen/item_img_width"-->
             <!--android:background="@drawable/gradient_up" />-->
 
-        <!-- Back button -->
-        <ImageView
-            android:id="@+id/item_button_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/item_country"
-            android:layout_marginTop="8dp"
-            android:background="?attr/selectableItemBackground"
-            android:padding="8dp"
-            app:srcCompat="@drawable/ic_close_white_24px"
-            android:alpha="0.85"
-            />
+            <!-- Back button -->
+            <ImageView
+                android:id="@+id/item_button_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/item_country"
+                android:layout_marginTop="8dp"
+                android:background="?attr/selectableItemBackground"
+                android:padding="8dp"
+                app:srcCompat="@drawable/ic_close_white_24px" />
+
+            <ImageView
+                android:id="@+id/item_img_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@+id/item_button_back"
+                android:layout_marginRight="8dp"
+                android:background="?attr/selectableItemBackground"
+                android:padding="8dp"
+                android:visibility="gone"
+                app:srcCompat="@drawable/ic_info_outline_white_24dp"
+                tools:visibility="visible" />
 
 
-        <me.zhanghai.android.materialratingbar.MaterialRatingBar
-            android:id="@+id/item_rating"
-            style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/item_country"
-            android:layout_alignLeft="@+id/item_country"
-            app:mrb_progressTint="@android:color/white"
-            app:mrb_secondaryProgressTint="@android:color/white"
-            android:alpha="0.7"
-            tools:rating="3"/>
+            <me.zhanghai.android.materialratingbar.MaterialRatingBar
+                android:id="@+id/item_rating"
+                style="@style/Widget.MaterialRatingBar.RatingBar.Indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/item_country"
+                android:layout_alignLeft="@+id/item_country"
+                android:alpha="0.6"
+                app:mrb_progressTint="@android:color/white"
+                app:mrb_secondaryProgressTint="@android:color/white"
+                tools:rating="3" />
 
-        <TextView
-            android:id="@+id/item_num_ratings"
+            <TextView
+                android:id="@+id/item_num_ratings"
+                style="@style/WhiteTextWithShadow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/item_rating"
+                android:layout_alignTop="@+id/item_rating"
+                android:layout_marginLeft="4dp"
+                android:layout_toRightOf="@+id/item_rating"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                tools:text="(10)" />
+
+            <TextView
+                android:id="@+id/item_country"
+                style="@style/WhiteTextWithShadow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/item_image"
+                android:layout_marginBottom="32dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                tools:text="Italy" />
+
+            <TextView
+                android:id="@+id/divider"
+                style="@style/AppTheme.TextDivider"
+                android:layout_alignTop="@+id/item_country"
+                android:layout_toRightOf="@+id/item_country"
+                android:alpha="0.8"
+                android:text="@string/divider_bullet"
+                android:textColor="@android:color/white" />
+
+            <TextView
+                android:id="@+id/item_img_title"
+                style="@style/WhiteTextWithShadow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/item_country"
+                android:layout_below="@+id/item_country"
+                android:layout_marginRight="8dp"
+                android:layout_toRightOf="@+id/divider"
+                android:ellipsize="end"
+                android:maxLines="1"
+                tools:text="Danubian plane Danubian plane Danubian plane Danubian plane Danubian plane" />
+
+
+            <!--<TextView-->
+            <!--android:id="@+id/restaurant_price"-->
+            <!--style="@style/AppTheme.Body1"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:layout_alignTop="@+id/item_country"-->
+            <!--android:layout_marginRight="8dp"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--android:textColor="@android:color/white"-->
+            <!--android:textStyle="bold"-->
+            <!--tools:text="$$$" />-->
+
+
+        </RelativeLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_play_sound"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/item_rating"
-            android:layout_alignTop="@+id/item_rating"
-            android:layout_marginLeft="4dp"
-            android:layout_toRightOf="@+id/item_rating"
+            android:layout_alignBottom="@+id/restaurant_top_card"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="-28dp"
+            android:layout_marginRight="16dp"
+            android:alpha=".5"
+            android:clickable="false"
+            app:srcCompat="@drawable/ic_play_24dp" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_add_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+           android:layout_above="@+id/ad_frame"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginRight="16dp"
+            android:contentDescription="add rating"
+            app:srcCompat="@drawable/ic_add_white_24px" />
+
+
+        <!-- Ratings -->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_ratings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/restaurant_top_card"
+            android:background="@android:color/transparent"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp"
+            android:paddingTop="28dp"
+            android:visibility="gone"
+            tools:listitem="@layout/item_rating" />
+
+        <!-- View for empty ratings -->
+        <LinearLayout
+            android:id="@+id/view_empty_ratings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/restaurant_top_card"
+            android:layout_centerHorizontal="true"
             android:gravity="center"
-            android:textColor="@android:color/white"
-            style="@style/WhiteTextWithShadow"
-            tools:text="(10)" />
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
 
-        <TextView
-            android:id="@+id/item_country"
-            style="@style/WhiteTextWithShadow"
+            <ImageView
+                style="@style/AppTheme.PizzaGuy"
+                android:src="@drawable/pizza_monster" />
+
+            <TextView
+                style="@style/AppTheme.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/message_no_reviews"
+                android:textColor="@color/greyDisabled" />
+
+        </LinearLayout>
+
+        <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/item_image"
-            android:layout_marginBottom="32dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            tools:text="Italy" />
+            tools:layout_height="50dp"
+            tools:layout_width="320dp"
+            tools:background="@color/greyDisabled"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/ad_frame">
 
-        <TextView
-            android:id="@+id/divider"
-            style="@style/AppTheme.TextDivider"
-            android:layout_alignTop="@+id/item_country"
-            android:layout_toRightOf="@+id/item_country"
-            android:text="@string/divider_bullet"
-            android:textColor="@android:color/white"
-            android:alpha="0.8"/>
-
-        <TextView
-            android:id="@+id/item_img_title"
-            style="@style/WhiteTextWithShadow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/item_country"
-            android:layout_below="@+id/item_country"
-            android:layout_toRightOf="@+id/divider"
-            android:layout_marginRight="8dp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            tools:text="Danubian plane Danubian plane Danubian plane Danubian plane Danubian plane" />
-
-
-        <!--<TextView-->
-        <!--android:id="@+id/restaurant_price"-->
-        <!--style="@style/AppTheme.Body1"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_alignTop="@+id/item_country"-->
-        <!--android:layout_marginRight="8dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:textColor="@android:color/white"-->
-        <!--android:textStyle="bold"-->
-        <!--tools:text="$$$" />-->
-
+        </FrameLayout>
 
     </RelativeLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_play_sound"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/restaurant_top_card"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="-28dp"
-        android:layout_marginRight="16dp"
-        app:srcCompat="@drawable/ic_play_24dp"
-        android:clickable="false"
-        android:alpha=".5"/>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_add_rating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="add rating"
-       android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="16dp"
-        android:layout_marginBottom="16dp"
-        app:srcCompat="@drawable/ic_add_white_24px" />
-
-
-    <!-- Ratings -->
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_ratings"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/restaurant_top_card"
-        android:background="@android:color/transparent"
-        android:clipToPadding="false"
-        android:paddingBottom="16dp"
-        android:paddingTop="28dp"
-        android:visibility="gone"
-        tools:listitem="@layout/item_rating" />
-
-    <!-- View for empty ratings -->
-    <LinearLayout
-        android:id="@+id/view_empty_ratings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/restaurant_top_card"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone"
-        tools:visibility="visible">
-
-        <ImageView
-            style="@style/AppTheme.PizzaGuy"
-            android:src="@drawable/pizza_monster" />
-
-        <TextView
-            style="@style/AppTheme.Body1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/message_no_reviews"
-            android:textColor="@color/greyDisabled" />
-
-    </LinearLayout>
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

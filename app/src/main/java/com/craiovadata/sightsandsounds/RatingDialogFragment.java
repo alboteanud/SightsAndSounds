@@ -1,10 +1,12 @@
 package com.craiovadata.sightsandsounds;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,6 +57,12 @@ public class RatingDialogFragment extends DialogFragment {
         View v = inflater.inflate(R.layout.dialog_rating, container, false);
         ButterKnife.bind(this, v);
 
+        String savedUserName = getActivity().getPreferences(Context.MODE_PRIVATE).getString("userName", null);
+        if (savedUserName!=null){
+            usernameText.setText(savedUserName);
+            mRatingText.requestFocus();
+        }
+
         return v;
     }
 
@@ -78,6 +86,7 @@ public class RatingDialogFragment extends DialogFragment {
 
     @OnClick(R.id.restaurant_form_button)
     public void onSubmitClicked(View view) {
+        final String strUserName = usernameText.getText().toString();
 
         final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuth.signInAnonymously().addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
@@ -90,7 +99,7 @@ public class RatingDialogFragment extends DialogFragment {
 //                            updateUI(user);
 
                     Rating rating = new Rating(
-                            user, usernameText.getText().toString(),
+                            user, strUserName,
                             mRatingBar.getRating(),
                             mRatingText.getText().toString());
 
@@ -105,6 +114,8 @@ public class RatingDialogFragment extends DialogFragment {
             }
         });
 
+        if (!TextUtils.isEmpty(strUserName))
+            getActivity().getPreferences(Context.MODE_PRIVATE).edit().putString("userName", strUserName).apply();
         dismiss();
     }
 

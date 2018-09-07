@@ -62,6 +62,10 @@
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textSize">20sp</item>
     </style>
+<style name="AppTheme.SubTitle">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">18sp</item>
+    </style>
 
     <style name="AppTheme.Subheader">
         <item name="android:fontFamily">sans-serif</item>

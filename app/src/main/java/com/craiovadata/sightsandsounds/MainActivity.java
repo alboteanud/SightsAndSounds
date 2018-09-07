@@ -10,9 +10,12 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.craiovadata.sightsandsounds.adapter.ItemAdapter;
 import com.craiovadata.sightsandsounds.viewmodel.MainActivityViewModel;
+import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -106,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements
         // Filter Dialog
         mFilterDialog = new FilterDialogFragment();
 
+        MobileAds.initialize(this, getString(R.string.admob_app_id));
 
     }
 

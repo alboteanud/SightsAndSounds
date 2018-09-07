@@ -15,13 +15,20 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.craiovadata.sightsandsounds.adapter.RatingAdapter;
 import com.craiovadata.sightsandsounds.model.Item;
 import com.craiovadata.sightsandsounds.model.Rating;
 import com.craiovadata.sightsandsounds.util.GlideApp;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -37,11 +44,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
+
 
 public class DetailActivity extends AppCompatActivity
         implements EventListener<DocumentSnapshot>, RatingDialogFragment.RatingListener {
@@ -51,6 +60,7 @@ public class DetailActivity extends AppCompatActivity
     public static final String KEY_ITEM_ID = "key_item_id";
     private MediaPlayer mediaPlayer;
     private Uri soundUri;
+    private Item item;
 
     @BindView(R.id.item_image)
     ImageView mImageView;
@@ -88,6 +98,7 @@ public class DetailActivity extends AppCompatActivity
 
     private RatingAdapter mRatingAdapter;
     private String itemID;
+    AdView adView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +141,39 @@ public class DetailActivity extends AppCompatActivity
         mRatingsRecycler.setAdapter(mRatingAdapter);
 
         mRatingDialog = new RatingDialogFragment();
+
+
+    }
+
+    private void loadAdBanner() {
+        if (adView != null) return;
+
+        adView = new AdView(this);
+
+        adView.setAdSize(AdSize.BANNER);
+        final String bannerId = getAdBannerId();
+        adView.setAdUnitId(bannerId);
+        adView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                FrameLayout frameLayout = findViewById(R.id.ad_frame);
+                frameLayout.addView(adView);
+            }
+        });
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+    }
+
+    private String getAdBannerId() {
+        int n = new Random().nextInt(10);
+        if (n == 0)
+            return "ca-app-pub-3052455927658337/1039456339";  // adriana
+        else if (n < 4)
+            return "ca-app-pub-1015344817183694/5656809454";  // victoria55
+        else
+            return "ca-app-pub-3931793949981809/2134822250"; // dan
     }
 
     @Override
@@ -138,7 +182,15 @@ public class DetailActivity extends AppCompatActivity
 
         mRatingAdapter.startListening();
         itemRegistration = itemRef.addSnapshotListener(this);
+        initSoundSource();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (adView!=null)
+            adView.resume();
     }
 
     @Override
@@ -146,6 +198,8 @@ public class DetailActivity extends AppCompatActivity
         super.onPause();
         if (mediaPlayer != null && mediaPlayer.isPlaying())
             mediaPlayer.pause();
+        if (adView!=null)
+            adView.pause();
     }
 
     @Override
@@ -160,8 +214,9 @@ public class DetailActivity extends AppCompatActivity
             itemRegistration.remove();
             itemRegistration = null;
         }
-    }
 
+
+    }
 
     @Override
     public void finish() {
@@ -185,6 +240,7 @@ public class DetailActivity extends AppCompatActivity
     }
 
     private void onItemLoaded(Item item) {
+        this.item = item;
 
         img_titleTextView.setText(item.getImg_title());
 
@@ -203,7 +259,7 @@ public class DetailActivity extends AppCompatActivity
                 .thumbnail(GlideApp.with(mImageView.getContext()).load(thumbnailRef))
                 .into(mImageView);
 
-        initSoundSource(itemID);
+        findViewById(R.id.item_img_info).setVisibility(View.VISIBLE);
     }
 
     @OnClick(R.id.item_button_back)
@@ -216,11 +272,24 @@ public class DetailActivity extends AppCompatActivity
         mRatingDialog.show(getSupportFragmentManager(), RatingDialogFragment.TAG);
     }
 
+    @OnClick(R.id.item_img_info)
+    public void onInfoImgClicked(View view) {
+        if (item != null) {
+            InfoDialogFragment infoDialogFragment = new InfoDialogFragment();
+            infoDialogFragment.setItem(item);
+            infoDialogFragment.show(getSupportFragmentManager(), InfoDialogFragment.TAG);
+        }
+
+
+
+    }
+
+
     @OnClick(R.id.fab_play_sound)
     public void onPlayClicked(View view) {
-        if (mediaPlayer == null) return;
-
-        if (mediaPlayer.isPlaying()) {
+        if (mediaPlayer == null)
+            initMediaPlayer(true);
+        else if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
             mediaPlayer.seekTo(0);
         } else {
@@ -228,10 +297,11 @@ public class DetailActivity extends AppCompatActivity
                 mediaPlayer.start();
             } catch (IllegalStateException e) {
                 e.printStackTrace();
-//                releaseMediaPlayer();
+                releaseMediaPlayer();
             }
 
         }
+        loadAdBanner();
     }
 
     @Override
@@ -246,6 +316,10 @@ public class DetailActivity extends AppCompatActivity
                         // Hide keyboard and scroll to top
                         hideKeyboard();
                         mRatingsRecycler.smoothScrollToPosition(0);
+
+                        Snackbar.make(findViewById(R.id.myDetailCoordinatorLayout), R.string.review_sent,
+                                Snackbar.LENGTH_SHORT)
+                                .show();
                     }
                 })
                 .addOnFailureListener(this, new OnFailureListener() {
@@ -299,15 +373,15 @@ public class DetailActivity extends AppCompatActivity
         }
     }
 
-    private void initSoundSource(String id) {
-        StorageReference soundRef = FirebaseStorage.getInstance().getReference().child("sounds/" + id + "_x264.mp4");
+    private void initSoundSource() {
+        StorageReference soundRef = FirebaseStorage.getInstance().getReference().child("sounds/" + itemID + "_x264.mp4");
         Task<Uri> downloadUrl = soundRef.getDownloadUrl();
         downloadUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 soundUri = uri;
 //                findViewById(R.id.play_sound).setVisibility(View.VISIBLE);
-                initMediaPlayer();
+                initMediaPlayer(false);
             }
         })
                 .addOnFailureListener(new OnFailureListener() {
@@ -316,9 +390,6 @@ public class DetailActivity extends AppCompatActivity
                         FloatingActionButton buttonPlay = findViewById(R.id.fab_play_sound);
                         buttonPlay.setClickable(false);
                         buttonPlay.setAlpha(.5f);
-
-//                        findViewById(R.id.fab_play_sound).setVisibility(View.GONE);
-//                        findViewById(R.id.song_title).setVisibility(View.GONE);
                     }
                 });
     }
@@ -330,9 +401,10 @@ public class DetailActivity extends AppCompatActivity
         }
     }
 
-    private void initMediaPlayer() {
-//        if (mediaPlayer!=null)
-//            return;
+    private void initMediaPlayer(final boolean startPlay) {
+        if (soundUri == null) return;
+        if (mediaPlayer != null)
+            mediaPlayer.release();
         mediaPlayer = new MediaPlayer();
 //        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
@@ -359,9 +431,8 @@ public class DetailActivity extends AppCompatActivity
                 FloatingActionButton buttonPlay = findViewById(R.id.fab_play_sound);
                 buttonPlay.setClickable(true);
                 buttonPlay.setAlpha(1.0f);
-
-//                findViewById(R.id.song_title).setVisibility(View.VISIBLE);
-//                mediaPlayer.start();
+                if (startPlay)
+                    mediaPlayer.start();
             }
         });
         try {

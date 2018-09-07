@@ -44,6 +44,8 @@
     <string name="option_retry">Retry</string>
     <string name="option_exit">Exit</string>
     <string name="hint_username">Your nickname (optional)</string>
+    <string name="review_sent">Your review was posted</string>
+    <string name="admob_app_id">ca-app-pub-3931793949981809~9763575423</string>
 
     <!-- Types of food I could think of in 5 minutes -->
     <string-array name="categories">
