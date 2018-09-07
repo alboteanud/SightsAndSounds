@@ -8,4 +8,8 @@ TO DO in futer launches
 - Cleanup resources
 - Test on tablets
 - MediaPlayer improve - Look at UniversalMusicPlayer demo. Maybe use ExoPlayer
+- Change App Icon
+- Add more ads or in App purchases
+- Verif sounds, add more
+- Stelutele, restilizare Details Activity
 
