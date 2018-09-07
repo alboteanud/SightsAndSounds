@@ -1,5 +1,6 @@
 package com.craiovadata.sightsandsounds;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -21,18 +22,14 @@ public class InfoDialogFragment extends DialogFragment {
 
     public static final String TAG = "InfoDialog";
     Item item;
+    boolean isImageDescr;
 
-    @BindView(R.id.iimage_info_text_view)
-    TextView imageInfoTextView;
+    @BindView(R.id.textView_details)
+    TextView textViewDetails;
 
-    @BindView(R.id.image_textView_title)
-    TextView imgTitleTextView;
+    @BindView(R.id.textView_title)
+    TextView textViewTitle;
 
-    @BindView(R.id.sound_info_text_view)
-    TextView soundInfoTextView;
-
-    @BindView(R.id.sound_textView_title)
-    TextView soundTitleTextView;
 
     @Nullable
     @Override
@@ -42,11 +39,12 @@ public class InfoDialogFragment extends DialogFragment {
         View v = inflater.inflate(R.layout.dialog_info, container, false);
         ButterKnife.bind(this, v);
 
-        imgTitleTextView.setText(item.getImg_title());
-        imageInfoTextView.setText(item.getImg_description());
-        soundTitleTextView.setText(item.getMusic_title());
-        soundInfoTextView.setText(item.getMusic_description());
+        if (item != null) {
 
+            isImageDescr = getActivity().getPreferences(Context.MODE_PRIVATE).getBoolean("isImageDescr", false);
+            updateUI(isImageDescr);
+        } else
+            dismiss();
         return v;
     }
 
@@ -64,8 +62,33 @@ public class InfoDialogFragment extends DialogFragment {
         dismiss();
     }
 
+    @OnClick(R.id.details_switch_button)
+    public void onSwitchInfoButtonClicked(View view) {
+        isImageDescr = !isImageDescr;
+        updateUI(isImageDescr);
+    }
+
 
     public void setItem(Item item) {
         this.item = item;
+    }
+
+    void updateUI(boolean isImageDescr) {
+        String title, descr;
+        if (isImageDescr) {
+            title = "\u263C  \n" + item.getImg_title();
+            descr = item.getImg_description();
+        } else {
+            title = "\u266B \n" + item.getMusic_title();
+            descr = item.getMusic_description();
+        }
+        textViewTitle.setText(title);
+        textViewDetails.setText(descr);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        getActivity().getPreferences(Context.MODE_PRIVATE).edit().putBoolean("isImageDescr", isImageDescr).apply();
     }
 }

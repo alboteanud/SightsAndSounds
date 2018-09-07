@@ -279,9 +279,6 @@ public class DetailActivity extends AppCompatActivity
             infoDialogFragment.setItem(item);
             infoDialogFragment.show(getSupportFragmentManager(), InfoDialogFragment.TAG);
         }
-
-
-
     }
 
 

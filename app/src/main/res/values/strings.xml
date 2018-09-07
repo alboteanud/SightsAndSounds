@@ -47,6 +47,8 @@
     <string name="review_sent">Your review was posted</string>
     <string name="admob_app_id">ca-app-pub-3931793949981809~9763575423</string>
 
+    <string name="title_music">\u266B %1$s</string>
+
     <!-- Types of food I could think of in 5 minutes -->
     <string-array name="categories">
         <item>@string/value_any_category</item>
