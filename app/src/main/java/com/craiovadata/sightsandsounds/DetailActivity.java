@@ -158,8 +158,12 @@ public class DetailActivity extends AppCompatActivity
             public void onAdLoaded() {
                 super.onAdLoaded();
                 FrameLayout frameLayout = findViewById(R.id.ad_frame);
-                frameLayout.addView(adView);
+                if (adView.getParent() == null)
+                    frameLayout.addView(adView);
+
             }
+
+
         });
 
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -189,7 +193,7 @@ public class DetailActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (adView!=null)
+        if (adView != null)
             adView.resume();
     }
 
@@ -198,7 +202,7 @@ public class DetailActivity extends AppCompatActivity
         super.onPause();
         if (mediaPlayer != null && mediaPlayer.isPlaying())
             mediaPlayer.pause();
-        if (adView!=null)
+        if (adView != null)
             adView.pause();
     }
 

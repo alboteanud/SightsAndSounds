@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements
                 // Show a snackbar on errors
                 Snackbar.make(findViewById(android.R.id.content),
                         "Error: check logs for info.", Snackbar.LENGTH_LONG).show();
+
             }
         };
 
