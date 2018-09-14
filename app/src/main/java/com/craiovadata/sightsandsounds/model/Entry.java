@@ -15,6 +15,15 @@ public class Entry {
 //    private double lon;
     private int numRatings;
     private double avgRating;
+    String country_code;
+
+    public String getCountry_code() {
+        return country_code;
+    }
+
+    public void setCountry_code(String country_code) {
+        this.country_code = country_code;
+    }
 
     public Entry(String country, String img_title, String img_description, String music_title, String music_description, int numRatings, double avgRating) {
         this.country = country;

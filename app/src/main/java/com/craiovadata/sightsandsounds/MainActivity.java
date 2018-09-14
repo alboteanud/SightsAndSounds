@@ -193,6 +193,10 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.menu_calc_avrg:
                 onUpdateAvregeRatingClicked();
                 break;
+
+            case R.id.menu_add_country_codes:
+                onCountryCodesClicked();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -341,6 +345,9 @@ public class MainActivity extends AppCompatActivity implements
                                 final Entry entry = document.toObject(Entry.class);
 
                                 final DocumentReference itemRef = mFirestore.collection(MainActivity.COLLECTION_NAME).document(document.getId());
+                                // do something to this Entry
+
+
                                 Query ratingsQuery = itemRef.collection("ratings");
 
                                 ratingsQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -395,9 +402,9 @@ public class MainActivity extends AppCompatActivity implements
                 int newNumRatings = entry.getNumRatings() + randomRatings.size();
 
                 double oldRatingTotal = 0.0;
-                if (entry.getAvgRating() != NaN){
+                if (entry.getAvgRating() != NaN) {
                     // Compute new average rating
-                 oldRatingTotal = entry.getAvgRating() * entry.getNumRatings();
+                    oldRatingTotal = entry.getAvgRating() * entry.getNumRatings();
                 }
 
                 double newAvgRating = (oldRatingTotal + RatingUtil.getTotalRating(randomRatings)) / newNumRatings;
@@ -414,6 +421,60 @@ public class MainActivity extends AppCompatActivity implements
                     final DocumentReference ratingRef = restaurantRef.collection("ratings").document();
                     transaction.set(ratingRef, rating);
                 }
+
+                return null;
+            }
+        });
+
+    }
+
+    private void onCountryCodesClicked() {
+        String jsonString = loadJSONFromAsset();
+        try {
+            JSONArray jsonArray = new JSONArray(jsonString);
+
+            for (int i = 0; i < 319; i++) {
+                String country_code = getCountryCode(jsonArray, i);
+
+                String refId = String.valueOf(i + 2); // inclus decalajul din lista
+                DocumentReference entryRef = mFirestore.collection("sights_and_sounds_").document(refId);
+                addCountryCode(entryRef, country_code);
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private String getCountryCode(JSONArray jsonArray, int i) {
+
+        try {
+            JSONObject jsonEntry = jsonArray.getJSONObject(i);
+            String country_code = jsonEntry.getString("code");
+            return country_code;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    private Task<Void> addCountryCode(final DocumentReference restaurantRef, final String country_code) {
+        // Create reference for new rating, for use inside the transaction
+
+
+        // In a transaction, add the new rating and update the aggregate totals
+        return mFirestore.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+                Entry entry = transaction.get(restaurantRef).toObject(Entry.class);
+
+                entry.setCountry_code(country_code);
+
+                // Commit to Firestore
+                transaction.set(restaurantRef, entry);
 
                 return null;
             }

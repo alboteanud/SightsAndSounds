@@ -21,5 +21,8 @@
     <item
         android:id="@+id/menu_calc_avrg"
         android:title="Calc avrg rating" />
+ <item
+        android:id="@+id/menu_add_country_codes"
+        android:title="Add country codes" />
 
 </menu>
