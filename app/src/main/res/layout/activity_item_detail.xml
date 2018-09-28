@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/myDetailCoordinatorLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -23,9 +24,9 @@
             <ImageView
                 android:id="@+id/item_image"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/item_img_width"
-                android:scaleType="centerCrop"
-                tools:src="@drawable/food_1" />
+                android:layout_height="wrap_content"
+                tools:src="@drawable/c93"
+                android:layout_alignParentTop="true"/>
 
             <!--<View-->
             <!--android:layout_width="match_parent"-->
