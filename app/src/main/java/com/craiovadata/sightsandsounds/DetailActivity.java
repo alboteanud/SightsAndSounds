@@ -29,6 +29,7 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -142,43 +143,20 @@ public class DetailActivity extends AppCompatActivity
 
         mRatingDialog = new RatingDialogFragment();
 
-
-    }
-
-    private void loadAdBanner() {
-        if (adView != null) return;
-
-        adView = new AdView(this);
-
-        adView.setAdSize(AdSize.BANNER);
-        final String bannerId = getAdBannerId();
-        adView.setAdUnitId(bannerId);
-        adView.setAdListener(new AdListener() {
+        MobileAds.initialize(this, getString(R.string.admob_app_id));
+        adView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.setAdListener(new AdListener(){
             @Override
             public void onAdLoaded() {
                 super.onAdLoaded();
-                FrameLayout frameLayout = findViewById(R.id.ad_frame);
-                if (adView.getParent() == null)
-                    frameLayout.addView(adView);
-
+                adView.setVisibility(View.VISIBLE);
             }
-
-
         });
-
-        AdRequest adRequest = new AdRequest.Builder().build();
         adView.loadAd(adRequest);
     }
 
-    private String getAdBannerId() {
-        int n = new Random().nextInt(10);
-        if (n == 0)
-            return "ca-app-pub-3052455927658337/1039456339";  // adriana
-        else if (n < 4)
-            return "ca-app-pub-1015344817183694/5656809454";  // victoria55
-        else
-            return "ca-app-pub-3931793949981809/2134822250"; // dan
-    }
+
 
     @Override
     public void onStart() {
@@ -302,7 +280,7 @@ public class DetailActivity extends AppCompatActivity
             }
 
         }
-        loadAdBanner();
+
     }
 
     @Override

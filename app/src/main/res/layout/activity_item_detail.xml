@@ -25,7 +25,7 @@
                 android:id="@+id/item_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:src="@drawable/c93"
+                tools:background="#434343"
                 android:layout_alignParentTop="true"/>
 
             <!--<View-->
@@ -149,7 +149,7 @@
             android:id="@+id/fab_add_rating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-           android:layout_above="@+id/ad_frame"
+           android:layout_above="@+id/adView"
             android:layout_alignParentRight="true"
             android:layout_marginBottom="16dp"
             android:layout_marginRight="16dp"
@@ -168,7 +168,8 @@
             android:paddingBottom="16dp"
             android:paddingTop="28dp"
             android:visibility="gone"
-            tools:listitem="@layout/item_rating" />
+            tools:listitem="@layout/item_rating"
+            android:layout_above="@id/adView"/>
 
         <!-- View for empty ratings -->
         <LinearLayout
@@ -196,17 +197,17 @@
 
         </LinearLayout>
 
-        <FrameLayout
+        <com.google.android.gms.ads.AdView
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:layout_height="50dp"
-            tools:layout_width="320dp"
-            tools:background="@color/greyDisabled"
-            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:id="@+id/ad_frame">
-
-        </FrameLayout>
+            android:layout_alignParentBottom="true"
+            android:visibility="gone"
+            ads:adSize="BANNER"
+            ads:adUnitId="ca-app-pub-3931793949981809/2134822250">
+        </com.google.android.gms.ads.AdView>
 
     </RelativeLayout>
 

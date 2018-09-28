@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements
         // Filter Dialog
         mFilterDialog = new FilterDialogFragment();
 
-        MobileAds.initialize(this, getString(R.string.admob_app_id));
+
 
     }
 
