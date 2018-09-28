@@ -157,11 +157,9 @@ public class DetailActivity extends AppCompatActivity
     }
 
 
-
     @Override
     public void onStart() {
         super.onStart();
-
         mRatingAdapter.startListening();
         itemRegistration = itemRef.addSnapshotListener(this);
         initSoundSource();
